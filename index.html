@@ -634,7 +634,10 @@
     display: inline-block;
     animation: digitFall 0.45s cubic-bezier(0.22,1,0.36,1) both;
   }
-
+@keyframes creditsFade {
+  0%, 100% { opacity: 0.4; text-shadow: none; }
+  50% { opacity: 1; text-shadow: 0 0 10px rgba(245,197,66,0.8), 0 0 20px rgba(245,197,66,0.4); }
+}
   .hint-small { font-size: 0.7rem; font-weight: 600; color: var(--muted2); letter-spacing: 1px; margin-left: 4px; }
 </style>
 </head>
@@ -700,8 +703,8 @@
   </div>
 
 </div>
-<div style="position:fixed; bottom:10px; right:18px; font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:#444; letter-spacing:1px; z-index:99;">
-  MADE BY MUHAMMAD ARQAM ❤️
+<div style="position:fixed; bottom:10px; right:18px; font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:#f5c542; letter-spacing:1px; z-index:99; animation: creditsFade 3s ease-in-out infinite;">
+  Made By Muhammad Arqam Ghayour with ❤️.
 </div>
 <script>
 
@@ -1551,5 +1554,6 @@ resetTest();
 </body>
 
 </html>
+
 
 
