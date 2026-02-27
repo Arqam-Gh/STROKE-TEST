@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STROKE TEST</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ia2ciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZkOTY2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2Y1YzU0MiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMWExYTFhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBhMGEwYSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPCEtLSBEYXJrIHJvdW5kZWQgc3F1YXJlIGJhY2tncm91bmQgLS0+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIEdvbGQgYm9yZGVyIC0tPgogIDxyZWN0IHg9IjEuNSIgeT0iMS41IiB3aWR0aD0iMjkiIGhlaWdodD0iMjkiIHJ4PSI2IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgja2cpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC44Ii8+CiAgPCEtLSBMaWdodG5pbmcgYm9sdCBzaGFwZSAoa2V5Ym9hcmQgc3RyaWtlKSAtLT4KICA8cGF0aCBkPSJNMTkgMyBMMTEgMTUgTDE2IDE1IEwxMyAyOSBMMjEgMTcgTDE2IDE3IFoiIGZpbGw9InVybCgja2cpIi8+CiAgPCEtLSBTbWFsbCBkb3QgYWNjZW50IGJvdHRvbS1yaWdodCAtLT4KICA8Y2lyY2xlIGN4PSIyNiIgY3k9IjI2IiByPSIyIiBmaWxsPSIjZjVjNTQyIiBvcGFjaXR5PSIwLjYiLz4KPC9zdmc+">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Bebas+Neue&display=swap&family=Playfair+Display:ital,wght@0,500;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #0f0f0f;
+    --border: #1e1e1e;
+    --text: #e8e8e8;
+    --muted: #3a3a3a;
+    --muted2: #666;
+    --accent: #f5c542;
+    --accent2: #ffd966;
+    --correct: #f5c542;
+    --wrong: #f97316;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    display: flex; flex-direction: column; align-items: center;
+    position: relative;
+  }
+
+  /* Grid background */
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(245,197,66,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,197,66,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    animation: gridDrift 20s linear infinite;
+    pointer-events: none; z-index: 0;
+  }
+  @keyframes gridDrift { from { background-position: 0 0; } to { background-position: 48px 48px; } }
+  body::after {
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 600px 300px at 0% 0%, rgba(245,197,66,0.05) 0%, transparent 70%),
+      radial-gradient(ellipse 600px 300px at 100% 100%, rgba(245,197,66,0.04) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+
+  .wrapper {
+    width: 100%; max-width: 1300px;
+    padding: 0 28px 10px;
+    margin-top: 10px;
+    display: flex; flex-direction: column; gap: 6px;
+    position: relative; z-index: 1;
+    height: calc(100vh - 20px);
+    animation: pageIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  
+  header {
+    flex-shrink: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 6px; border-bottom: 1px solid var(--border);
+  }
+
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.8rem;           /* BIGGER */
+    letter-spacing: 8px;
+    line-height: 1;
+    position: relative;
+    cursor: default;
+    /* letter-by-letter fire animation */
+    animation: logoFlicker 4s ease-in-out infinite;
+  }
+  .logo-stroke {
+    color: var(--accent);
+    display: inline-block;
+    animation: strokePulse 3s ease-in-out infinite;
+  }
+  .logo-test {
+    color: var(--muted2);
+    display: inline-block;
+    animation: testPulse 3s 0.4s ease-in-out infinite;
+  }
+  @keyframes strokePulse {
+    0%, 100% { text-shadow: 0 0 8px rgba(245,197,66,0.4), 0 0 20px rgba(245,197,66,0.15); color: var(--accent); }
+    50%       { text-shadow: 0 0 24px rgba(245,197,66,0.9), 0 0 50px rgba(245,197,66,0.4), 0 0 80px rgba(245,197,66,0.1); color: #fff8d6; }
+  }
+  @keyframes testPulse {
+    0%, 100% { color: #444; }
+    50%       { color: #777; }
+  }
+  /* underline draw on hover */
+  .logo::after {
+    content: ''; position: absolute; bottom: -2px; left: 0;
+    width: 100%; height: 2px; background: var(--accent);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+  .logo:hover::after { transform: scaleX(1); }
+
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .tagline { font-size: 0.7rem; font-weight: 600; color: var(--muted2); letter-spacing: 3px; text-transform: uppercase; }
+  .hint-tag { font-size: 0.68rem; font-weight: 700; color: var(--muted2); letter-spacing: 1px; border: 1px solid var(--border); padding: 3px 10px; }
+
+  
+  .card {
+    flex: 1; min-height: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    overflow: hidden; display: flex; flex-direction: column;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    animation: cardIn 0.6s 0.1s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  @keyframes cardIn {
+    from { opacity:0; transform: translateY(12px) scale(0.99); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+  }
+  .card.focused {
+    border-color: rgba(245,197,66,0.3);
+    box-shadow: 0 0 50px rgba(245,197,66,0.05), inset 0 0 40px rgba(245,197,66,0.02);
+  }
+
+  
+  .stats-panel {
+    flex-shrink: 0;
+    display: grid; gap: 1px;
+    background: var(--border); border-bottom: 1px solid var(--border);
+  }
+  .stats-panel.during-test  { grid-template-columns: 1fr 2.5fr; }
+  .stats-panel.show-results { grid-template-columns: repeat(4,1fr); }
+
+  .stat {
+    background: var(--surface); padding: 10px 20px;
+    text-align: center; position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .stat::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(245,197,66,0.03) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .stat:hover::before { opacity: 1; }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem; color: var(--accent); line-height: 1; display: inline-block;
+  }
+  .stat-value.big { font-size: 4rem; animation: numCount 0.5s ease; }
+  @keyframes numCount {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .stat-label {
+    font-size: 0.82rem; font-weight: 700; color: var(--muted2);
+    letter-spacing: 2.5px; text-transform: uppercase; margin-top: 2px; display: block;
+  }
+
+  .stat-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1.5;
+    padding: 0 20px;
+    text-align: center;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    letter-spacing: 0.2px;
+    text-shadow: 0 0 18px rgba(245,197,66,0.25);
+  }
+  .stat-quote.fade { opacity: 0; transform: translateY(6px); }
+
+  @keyframes statReveal {
+    from { opacity:0; transform: translateY(10px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+  .stat.animate-in { opacity:0; animation: statReveal 0.45s ease forwards; }
+  .stat.animate-in:nth-child(1) { animation-delay: 0.04s; }
+  .stat.animate-in:nth-child(2) { animation-delay: 0.12s; }
+  .stat.animate-in:nth-child(3) { animation-delay: 0.20s; }
+  .stat.animate-in:nth-child(4) { animation-delay: 0.28s; }
+
+  
+  .options-row {
+    flex-shrink: 0;
+    display: flex; align-items: center;
+    padding: 8px 28px; border-bottom: 1px solid var(--border);
+  }
+  .opt-label { font-size: 0.78rem; font-weight: 700; color: var(--muted2); letter-spacing: 2px; text-transform: uppercase; margin-right: 20px; white-space: nowrap; }
+  .opt-buttons { display: flex; gap: 12px; flex: 1; }
+
+  @keyframes optIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.9); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes optActivePop {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(0.88); }
+    65%  { transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+  @keyframes optGlowPulse {
+    0%, 100% { box-shadow: 0 0 0px rgba(245,197,66,0); }
+    50%       { box-shadow: 0 0 16px rgba(245,197,66,0.45), 0 0 32px rgba(245,197,66,0.15); }
+  }
+  @keyframes optShimmer {
+    0%   { left: -80%; }
+    100% { left: 130%; }
+  }
+
+  .opt-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted2); font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem; font-weight: 700;
+    padding: 6px 22px; cursor: pointer; letter-spacing: 1px;
+    transition: all 0.25s ease; position: relative; overflow: hidden;
+    animation: optIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  .opt-btn:nth-child(1) { animation-delay: 0.05s; }
+  .opt-btn:nth-child(2) { animation-delay: 0.12s; }
+  .opt-btn:nth-child(3) { animation-delay: 0.19s; }
+  .opt-btn:nth-child(4) { animation-delay: 0.26s; }
+
+  /* shimmer sweep on hover */
+  .opt-btn::after {
+    content: ''; position: absolute; top: 0; width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(245,197,66,0.2), transparent);
+    left: -80%; transition: none; pointer-events: none; z-index: 2;
+  }
+  .opt-btn:hover::after { animation: optShimmer 0.55s ease forwards; }
+
+  /* fill underlay */
+  .opt-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--accent); transform: scaleY(0);
+    transform-origin: bottom; transition: transform 0.25s cubic-bezier(0.22,1,0.36,1); z-index: 0;
+  }
+  .opt-btn span { position: relative; z-index: 1; }
+  .opt-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+  .opt-btn.active {
+    border-color: var(--accent); color: #000;
+    animation: optActivePop 0.35s cubic-bezier(0.22,1,0.36,1), optGlowPulse 2s 0.35s ease-in-out infinite;
+  }
+  .opt-btn.active::before { transform: scaleY(1); }
+
+  .timer-bar-wrap {
+    flex-shrink: 0;
+    height: 7px;            /* wider / taller */
+    background: rgba(255,255,255,0.03);
+    position: relative; overflow: hidden;
+  }
+  .timer-bar {
+    height: 100%; width: 100%; transform-origin: left; position: relative;
+    background: linear-gradient(90deg, transparent 0%, var(--accent) 20%, var(--accent2) 50%, var(--accent) 80%, transparent 100%);
+    background-size: 300% 100%;
+  }
+  .timer-bar.running { animation: barShimmer 1.8s linear infinite; }
+  @keyframes barShimmer {
+    0%   { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
+  .timer-bar-wrap::after {
+    content: ''; position: absolute; inset: 0;
+    background: var(--accent); opacity: 0; filter: blur(8px); pointer-events: none;
+  }
+  .timer-bar-wrap.running::after { animation: barGlow 2s ease-in-out infinite; }
+  @keyframes barGlow {
+    0%, 100% { opacity: 0.1; }
+    50%       { opacity: 0.3; }
+  }
+
+
+  .words-area {
+    flex: 1; min-height: 0;
+    padding: 24px 52px;
+    position: relative; overflow: hidden;
+  }
+
+
+  .click-prompt {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(10,10,10,0.42);   /* words visible through */
+    z-index: 20; opacity: 1;
+    transition: opacity 0.35s ease;
+  }
+  .click-prompt.hidden { opacity: 0; pointer-events: none; }
+
+  .click-prompt-inner {
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+
+  /* Animated "Hit a key to start" box */
+  .click-prompt-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 7px;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    padding: 14px 44px;
+    position: relative; overflow: hidden;
+    animation: promptGlow 1.6s ease-in-out infinite;
+    text-transform: uppercase;
+  }
+  .click-prompt-text::before {
+    content: '';
+    position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(245,197,66,0.18), transparent);
+    animation: promptSweep 1.8s ease-in-out infinite;
+  }
+  @keyframes promptSweep {
+    0%   { left: -60%; }
+    100% { left: 130%; }
+  }
+  @keyframes promptGlow {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(245,197,66,0.25), inset 0 0 10px rgba(245,197,66,0.06);
+      border-color: rgba(245,197,66,0.55); color: rgba(245,197,66,0.8);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(245,197,66,0.6), inset 0 0 18px rgba(245,197,66,0.12);
+      border-color: var(--accent); color: var(--accent);
+    }
+  }
+
+ 
+  @keyframes quoteEntrance {
+    0%   { opacity: 0; transform: translateY(14px) scale(0.95); filter: blur(4px); }
+    100% { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
+  }
+  @keyframes challengeShimmer {
+    0%   { background-position: -300% center; }
+    100% { background-position: 300% center; }
+  }
+  @keyframes challengeFloat {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-5px); }
+  }
+
+  .challenge-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    font-weight: 600;
+    text-align: center;
+    max-width: 600px;
+    line-height: 1.55;
+    background: linear-gradient(90deg, rgba(245,197,66,0.5) 0%, #fff8d6 40%, var(--accent) 60%, rgba(245,197,66,0.5) 100%);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: quoteEntrance 0.6s cubic-bezier(0.22,1,0.36,1) both,
+               challengeShimmer 4s linear infinite,
+               challengeFloat 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px rgba(245,197,66,0.25));
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .challenge-quote.fade-out { opacity: 0; transform: translateY(8px); -webkit-text-fill-color: transparent; }
+
+  .words-display {
+    font-size: 1.78rem; line-height: 1.75;
+    font-weight: 600;
+    user-select: none; position: relative;
+    overflow: hidden; height: 100%;
+    color: #3e3e3e; transition: color 0.4s ease;
+  }
+  .words-display.active-typing { color: #686868; }
+  /* Last-line fade-out */
+  .words-display::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 22%; pointer-events: none; z-index: 6;
+    background: linear-gradient(to bottom, transparent 0%, var(--surface) 100%);
+  }
+
+  /* words-inner scrolls via translateY */
+  #words-inner {
+    position: relative;
+    transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    display: flex; flex-wrap: wrap; align-content: flex-start;
+    gap: 0 0.45em;
+  }
+
+  .char { display: inline-block; position: relative; transition: color 0.06s; }
+  .char.correct { color: var(--correct); }
+  .char.wrong {
+    color: var(--wrong);
+    animation: charShatter 0.35s cubic-bezier(0.36,0.07,0.19,0.97) forwards;
+  }
+  @keyframes charShatter {
+    0%   { transform: scale(1) rotate(0deg);     opacity: 1; }
+    20%  { transform: scale(1.5) rotate(-10deg); color: #ff4500; }
+    45%  { transform: scale(0.65) rotate(14deg); opacity: 0.8; filter: blur(0.5px); }
+    70%  { transform: scale(1.1) rotate(-4deg);  opacity: 0.9; }
+    100% { transform: scale(1) rotate(0deg);     opacity: 1; color: var(--wrong); }
+  }
+
+  /* NEW: correct char glow ripple */
+  @keyframes correctGlow {
+    0%   { text-shadow: none; }
+    40%  { text-shadow: 0 0 8px rgba(245,197,66,0.9), 0 0 16px rgba(245,197,66,0.5); }
+    100% { text-shadow: 0 0 3px rgba(245,197,66,0.25); }
+  }
+  .char.correct {
+    color: var(--correct);
+    animation: correctGlow 0.55s ease forwards;
+  }
+
+
+
+  /* NEW: cursor trail sparkles */
+  @keyframes sparkFade {
+    0%   { opacity: 0.9; transform: scale(1) translateY(0); }
+    100% { opacity: 0; transform: scale(0.2) translateY(-14px); }
+  }
+  .cursor-spark {
+    position: absolute; width: 3px; height: 3px; border-radius: 50%;
+    background: var(--accent); pointer-events: none; z-index: 9;
+    animation: sparkFade 0.5s ease forwards;
+  }
+
+  /* NEW: scanline sweep on card when active */
+  @keyframes scanSweep {
+    0%   { top: -4px; opacity: 0.18; }
+    50%  { opacity: 0.35; }
+    100% { top: 100%; opacity: 0; }
+  }
+  .card.focused::before {
+    content: '';
+    position: absolute; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(245,197,66,0.6), transparent);
+    animation: scanSweep 3s ease-in-out infinite;
+    pointer-events: none; z-index: 5;
+  }
+  .card { position: relative; overflow: hidden; }
+
+  /* NEW: button ripple */
+  @keyframes btnRipple {
+    0%   { transform: scale(0); opacity: 0.5; }
+    100% { transform: scale(4); opacity: 0; }
+  }
+  .btn-ripple {
+    position: absolute; border-radius: 50%;
+    width: 40px; height: 40px; margin-left: -20px; margin-top: -20px;
+    background: rgba(245,197,66,0.4);
+    animation: btnRipple 0.6s ease forwards;
+    pointer-events: none;
+  }
+
+  /* NEW: word commit flash */
+  @keyframes wordFlash {
+    0%   { background: rgba(245,197,66,0.12); }
+    100% { background: transparent; }
+  }
+  .word.committed { animation: wordFlash 0.4s ease forwards; }
+
+  /* NEW: stat value big bounce on results */
+  @keyframes numCount {
+    0%   { transform: scale(0.5) translateY(10px); opacity: 0; }
+    60%  { transform: scale(1.12) translateY(-3px); opacity: 1; }
+    80%  { transform: scale(0.96); }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  /* NEW: floating +1 particles on correct word */
+  @keyframes floatUp {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-36px) scale(0.7); }
+  }
+  .float-particle {
+    position: absolute; font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem; color: var(--accent); pointer-events: none; z-index: 15;
+    animation: floatUp 0.75s ease forwards;
+  }
+
+  /* Timer tick animation */
+  @keyframes timerTick {
+    0%   { transform: scale(1); }
+    18%  { transform: scale(1.22); color: #fff8d6; text-shadow: 0 0 18px rgba(245,197,66,1), 0 0 40px rgba(245,197,66,0.5); }
+    40%  { transform: scale(0.93); }
+    65%  { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+  .time-tick {
+    display: inline-block;
+    animation: timerTick 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+
+  /* Urgency pulse when <= 10s */
+  @keyframes urgentPulse {
+    0%, 100% { color: var(--accent); text-shadow: 0 0 6px rgba(245,197,66,0.4); }
+    50%       { color: #ff6b35; text-shadow: 0 0 22px rgba(255,107,53,0.9), 0 0 40px rgba(255,107,53,0.4); }
+  }
+  .stat-value.urgent { animation: urgentPulse 0.7s ease-in-out infinite; }
+
+  /* Row entrance animation for words */
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .word { display: inline-block; white-space: nowrap; animation: rowIn 0.3s ease both; }
+
+  /* Correct word golden shimmer */
+  @keyframes wordGoldShimmer {
+    0%   { filter: brightness(1); }
+    40%  { filter: brightness(1.6) drop-shadow(0 0 4px rgba(245,197,66,0.7)); }
+    100% { filter: brightness(1); }
+  }
+  .word.committed { animation: wordGoldShimmer 0.45s ease forwards; }
+
+  /* Stat panel glow on results reveal */
+  @keyframes statPanelGlow {
+    0%   { box-shadow: none; }
+    40%  { box-shadow: 0 0 30px rgba(245,197,66,0.18), inset 0 0 20px rgba(245,197,66,0.06); }
+    100% { box-shadow: 0 0 8px rgba(245,197,66,0.06); }
+  }
+  .stats-panel.show-results { animation: statPanelGlow 1s ease forwards; }
+
+  /* WPM big number roll-in */
+  @keyframes numCount {
+    0%   { transform: scale(0.5) translateY(10px); opacity: 0; }
+    60%  { transform: scale(1.15) translateY(-3px); opacity: 1; }
+    80%  { transform: scale(0.97); }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  /* Quote text entrance shimmer */
+  @keyframes quoteShimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .stat-quote {
+    background: linear-gradient(90deg, var(--accent) 30%, #fff8d6 50%, var(--accent) 70%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: quoteShimmer 3.5s linear infinite;
+  }
+  .stat-quote.fade { opacity: 0; transform: translateY(6px); -webkit-text-fill-color: transparent; }
+
+  /* Char cascade on test start — only untyped chars */
+  @keyframes charDrop {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .words-display.active-typing .char:not(.correct):not(.wrong) {
+    animation: charDrop 0.25s ease both;
+  }
+
+  /* Edge glow pulse when typing */
+  @keyframes edgeGlow {
+    0%, 100% { box-shadow: inset 0 0 0px rgba(245,197,66,0); }
+    50%       { box-shadow: inset 0 0 22px rgba(245,197,66,0.07); }
+  }
+  .words-area.typing-glow { animation: edgeGlow 2s ease-in-out infinite; }
+  @keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-6px); }
+    60%       { transform: translateX(6px); }
+  }
+  .word.shake { animation: wrongShake 0.28s ease; }
+
+  /* Cursor */
+  #cursor-beam {
+    position: absolute; width: 2px; border-radius: 1px;
+    background: var(--accent); pointer-events: none; z-index: 10; display: none;
+    transition: left 0.07s cubic-bezier(0.25,0.46,0.45,0.94), top 0.07s cubic-bezier(0.25,0.46,0.45,0.94), height 0.05s ease;
+    box-shadow: 0 0 5px var(--accent), 0 0 12px rgba(245,197,66,0.3);
+    animation: beamBlink 1s ease-in-out infinite;
+  }
+  @keyframes beamBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+
+  #hidden-input {
+    position: absolute; opacity: 0; pointer-events: none;
+    width: 1px; height: 1px; top: 0; left: 0;
+  }
+
+  .actions {
+    flex-shrink: 0;
+    display: flex; gap: 12px; align-items: center;
+    animation: actionsIn 0.8s 0.2s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  @keyframes actionsIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+  .btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; padding: 10px 28px;
+    cursor: pointer; border: 1px solid var(--border);
+    background: transparent; color: var(--muted2);
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .btn::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 1px; background: var(--accent);
+    transform: scaleX(0); transition: transform 0.2s ease;
+  }
+  .btn:hover { color: var(--accent); border-color: var(--accent); }
+  .btn:hover::after { transform: scaleX(1); }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #000; }
+  .btn-primary::after { display: none; }
+  .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); color: #000; }
+  /* Digit-drop result reveal */
+  @keyframes digitFall {
+    0%   { opacity: 0; transform: translateY(-28px) scale(1.3); filter: blur(3px); }
+    55%  { opacity: 1; transform: translateY(4px)   scale(0.95); filter: blur(0); }
+    75%  { transform: translateY(-2px) scale(1.02); }
+    100% { opacity: 1; transform: translateY(0)     scale(1);    filter: blur(0); }
+  }
+  .digit-drop {
+    display: inline-block;
+    animation: digitFall 0.45s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  .hint-small { font-size: 0.7rem; font-weight: 600; color: var(--muted2); letter-spacing: 1px; margin-left: 4px; }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+<div class="wrapper">
+
+  <header>
+    <div class="logo">
+      <span class="logo-stroke">STROKE</span><span class="logo-test">TEST</span>
+    </div>
+    <div class="header-right">
+      <div class="tagline">Speed · Accuracy · Flow</div>
+      <div class="hint-tag">Tab = Restart</div>
+    </div>
+  </header>
+
+  <div class="card" id="main-card">
+
+    <div class="stats-panel during-test" id="stats-panel">
+      <div class="stat">
+        <span class="stat-value" id="time-display">—</span>
+        <span class="stat-label">Time Left</span>
+      </div>
+      <div class="stat" id="quote-cell">
+        <span class="stat-quote" id="live-quote"></span>
+      </div>
+    </div>
+
+    <div class="options-row">
+      <span class="opt-label">Duration</span>
+      <div class="opt-buttons">
+        <button class="opt-btn" data-time="15"><span>15s</span></button>
+        <button class="opt-btn active" data-time="30"><span>30s</span></button>
+        <button class="opt-btn" data-time="60"><span>60s</span></button>
+        <button class="opt-btn" data-time="120"><span>2 min</span></button>
+      </div>
+    </div>
+
+    <div class="timer-bar-wrap" id="timer-bar-wrap">
+      <div class="timer-bar" id="timer-bar"></div>
+    </div>
+
+    <div class="words-area" id="words-area">
+      <input type="text" id="hidden-input"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <div class="words-display" id="words-display">
+        <div id="cursor-beam"></div>
+      </div>
+      <div class="click-prompt" id="click-prompt">
+        <div class="click-prompt-inner">
+          <span class="click-prompt-text">Hit a key to start</span>
+          <span class="challenge-quote" id="challenge-quote"></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="restart-btn">↺ &nbsp;Restart</button>
+    <span class="hint-small">Space = next word &nbsp;·&nbsp; Tab = restart</span>
+  </div>
+
+</div>
+
+<script>
+
+const SENTENCE_POOL = [
+  "the morning breeze carried the scent of pine across the quiet valley",
+  "a complex problem often requires patience and careful observation",
+  "she packed her journal and set out before sunrise to photograph the fog",
+  "every great invention began as an unusual question nobody dared to ask",
+  "the library stood at the edge of town filled with forgotten knowledge",
+  "working quietly through the night he fixed every broken line of code",
+  "sunlight filtered through the leaves casting golden patterns on the path",
+  "they built the bridge one plank at a time over the rushing river",
+  "her curiosity led her down a winding road full of unexpected discoveries",
+  "the chef combined unusual flavors to craft a dish nobody had tasted before",
+  "a jazz quartet played softly beneath the neon glow of the city street",
+  "he memorized every mountain trail and could navigate without a compass",
+  "the scientist spent years studying how starfish regenerate lost limbs",
+  "quiet determination separates those who finish from those who stop early",
+  "autumn leaves drifted lazily past the window of the old reading room",
+  "the submarine descended into darkness where pressure crushed everything",
+  "she wrote three chapters by candlelight during a sudden power blackout",
+  "the expedition crossed frozen tundra for six weeks before reaching base",
+  "each paragraph revealed a clue that unlocked the next layer of mystery",
+  "fixing a vintage clock requires steady hands and exceptional knowledge",
+  "navigating by the stars sailors trusted the sky more than any map",
+  "the documentary explored how bees communicate through precise movement",
+  "a well-structured argument requires evidence logic and honest reflection",
+  "the fog rolled in from the harbor blanketing the docks in silence",
+  "her painting captured the moment just before rain touches dry earth",
+  "birds migrating south adjusted their flight paths based on wind patterns",
+  "the tournament demanded both physical endurance and tactical creativity",
+  "she practiced the piano sonata every evening until her fingers knew it",
+  "the telescope revealed a nebula glowing faintly sixty light-years away",
+  "baking sourdough bread involves cultivating living organisms over days",
+  "the detective examined every thread of fabric left behind at the scene",
+  "mountains formed over millions of years through relentless tectonic force",
+  "the marathon runner kept a steady pace knowing the final mile was hardest",
+  "deep beneath the coral reef lived creatures nobody had catalogued before",
+  "the architect designed the building so shadows shifted beautifully at noon",
+  "the engineer calibrated each sensor before the rocket left the launchpad",
+  "lightning struck the old oak tree splitting it straight down the center",
+  "the bakery opened at dawn filling the street with warmth and fresh aroma",
+  "she translated the ancient manuscript revealing a forgotten trade route",
+  "the wolf pack moved silently through the snow tracking their distant prey",
+  "the algorithm sorted millions of entries in less than a single second",
+  "every brushstroke on the canvas was deliberate intentional and irreversible",
+  "he trained every morning before the city woke to sharpen his reflexes",
+  "the novel unfolded through a series of letters exchanged over forty years",
+  "waves eroded the cliffs leaving behind arches and caves in the limestone",
+  "her thesis examined how urban noise affects the sleep quality of children",
+  "solving puzzles every day keeps the mind sharp and connections flexible",
+  "the storm knocked out power to the entire district for three days straight",
+  "the surgeon performed the delicate procedure with remarkable steady hands",
+  "the satellite transmitted data from orbit back to the ground station below",
+];
+
+
+
+const CHALLENGE_QUOTES = [
+  "FREE PALESTINE!",
+  "GANG, show them your actual power!",
+  "it's giving speed. it's giving accuracy. STROKE!",
+  "CAN cook this time, doesn't seems so.",
+  "Stop Staring Start Testing.",
+  "Seems like a NOOB has Arrived to test SKILLS.",
+  "WANNA GAIN AURA, STROKE!",
+  "okay but what if you just... didn't miss a single key",
+  "touch grass later. touch keys now !",
+  "lowkey obsessed with how fast you're about to go",
+  "era of zero typos starts rn bestie",
+  "the delulu is the solulu. believe you're fast. be fast.",
+  "serving keyboard supremacy and we love to see it",
+  "ate and left no crumbs. that's the goal.",
+  "it's giving Olympic-level typing and I'm here for it ✨",
+];
+
+const LIVE_QUOTES = {
+  slowPoor: [
+    "gang... are you okay? 💀",
+    "this ain't it and we both know it fr",
+    "no cap that was tragic. try again bestie.",
+    "the keyboard is not the problem just saying 😭",
+    "touch typing could never be your villain origin story",
+  ],
+  slowOkay: [
+    "it's giving... effort. we respect the grind.",
+    "lowkey warming up or lowkey napping? 👀",
+    "the slow and steady arc but like... speedrun it?",
+    "y'all this is giving main character who just woke up",
+    "not bad not good. solidly mid-tier era fr.",
+  ],
+  mediumPoor: [
+    "fast fingers, chaotic energy. very unhinged bestie.",
+    "the speed is there but accuracy said nah 💀",
+    "going full send but the keyboard said no lmao",
+    "girlboss speed, girlboss typos. it evens out ig.",
+    "speedrunning errors is not the move fr fr",
+  ],
+  mediumOkay: [
+    "okay not terrible, not elite, very much mid 💅",
+    "this is giving 9-to-5 office keyboard warrior era",
+    "you're literally one energy drink away from cooking",
+    "the potential is there and we see it bestie",
+    "solidly fine. but fine is not the vibe we're after.",
+  ],
+  mediumGood: [
+    "okay wait you're actually built different rn ✨",
+    "no cap this is lowkey impressive fr",
+    "the glow-up is REAL and I'm obsessed",
+    "slay behavior detected. continue this arc.",
+    "certified keyboard menace and we love to see it 🔥",
+  ],
+  fastPoor: [
+    "fast as hell but the accuracy said not today 💀",
+    "fingers on espresso, brain on chamomile lmao",
+    "bro said speed run and forgot accuracy existed",
+    "chaotic fast energy but we need accuracy to slay",
+    "unhinged speed. truly a disaster but make it fashion.",
+  ],
+  fastGood: [
+    "bestie you're actually cooking and I'm shook 😭🔥",
+    "the words are literally scared of you rn",
+    "no cap this is elite behavior fr fr",
+    "ChatGPT is nervous and rightfully so bestie",
+    "you just unlocked main character typing arc ✨",
+  ],
+  veryFastGood: [
+    "are you human? be so fr with me rn 👀",
+    "this is illegal in multiple countries no cap",
+    "the FBI just opened a tab on you bestie 💀",
+    "you type like rent is due in 5 minutes fr",
+    "not the keyboard going absolutely feral rn 🔥🔥",
+  ],
+  perfect: [
+    "zero typos zero chill absolute unhinged behavior 💅",
+    "perfect accuracy?? bestie you are NOT normal",
+    "ate. left no crumbs. not a single one. slay.",
+    "this is giving god-tier and I am not okay 😭✨",
+    "the keyboard just submitted to you and honestly valid",
+  ],
+};
+
+function getQuoteTier(wpm, acc) {
+  if (acc === 100 && wpm >= 60)  return 'perfect';
+  if (wpm >= 85  && acc >= 85)   return 'veryFastGood';
+  if (wpm >= 60  && acc >= 78)   return 'fastGood';
+  if (wpm >= 55  && acc < 72)    return 'fastPoor';
+  if (wpm >= 38  && acc >= 78)   return 'mediumGood';
+  if (wpm >= 35  && acc >= 62)   return 'mediumOkay';
+  if (wpm >= 30  && acc < 62)    return 'mediumPoor';
+  if (wpm >= 12  && acc >= 65)   return 'slowOkay';
+  return 'slowPoor';
+}
+
+let lastTier = '', lastLiveIdx = -1;
+function pickLiveQuote(tier) {
+  const pool = LIVE_QUOTES[tier];
+  let idx = Math.floor(Math.random() * pool.length);
+  if (tier === lastTier && pool.length > 1)
+    while (idx === lastLiveIdx) idx = Math.floor(Math.random() * pool.length);
+  lastTier = tier; lastLiveIdx = idx;
+  return pool[idx];
+}
+
+let challengeIdx = Math.floor(Math.random() * CHALLENGE_QUOTES.length);
+let challengeInterval = null;
+
+function setQuoteText(text) {
+  const el = document.getElementById('live-quote');
+  if (!el) return;
+  el.classList.add('fade');
+  setTimeout(() => {
+    el.textContent = text;
+    el.classList.remove('fade');
+  }, 400);
+}
+
+function rotateChallengeQuote() {
+  challengeIdx = (challengeIdx + 1) % CHALLENGE_QUOTES.length;
+  setQuoteText(CHALLENGE_QUOTES[challengeIdx]);
+}
+
+function startChallengeRotation() {
+  // Show immediately
+  const el = document.getElementById('live-quote');
+  if (el) el.textContent = CHALLENGE_QUOTES[challengeIdx];
+  // Rotate every 4 seconds
+  challengeInterval = setInterval(rotateChallengeQuote, 4000);
+}
+
+function stopChallengeRotation() {
+  if (challengeInterval) { clearInterval(challengeInterval); challengeInterval = null; }
+}
+
+
+let lastQuoteUpdate = 0;
+
+function updateLiveQuote(force = false) {
+  if (!started || finished) return;
+  const now = Date.now();
+  if (!force && now - lastQuoteUpdate < 3000) return; // update max every 3s
+  lastQuoteUpdate = now;
+
+  const elapsed = Math.max(selectedTime - timeLeft, 1);
+  const wpm = Math.round((correctChars / 5) / (elapsed / 60));
+  const acc = totalTyped > 0 ? Math.round((correctChars / totalTyped) * 100) : 100;
+  const tier = getQuoteTier(wpm, acc);
+  setQuoteText(pickLiveQuote(tier));
+}
+
+let selectedTime = 30, timeLeft = 30;
+let timer = null;
+let started = false, finished = false;
+let currentWordIndex = 0, currentCharIndex = 0;
+let totalTyped = 0, totalErrors = 0, correctChars = 0;
+let words = [], wordElements = [], charElements = [];
+
+const wordsDisplay = document.getElementById('words-display');
+const hiddenInput  = document.getElementById('hidden-input');
+const clickPrompt  = document.getElementById('click-prompt');
+const timerBar     = document.getElementById('timer-bar');
+const timerBarWrap = document.getElementById('timer-bar-wrap');
+const cursorBeam   = document.getElementById('cursor-beam');
+const statsPanel   = document.getElementById('stats-panel');
+const mainCard     = document.getElementById('main-card');
+
+function buildWordList(target) {
+  const pool = [...SENTENCE_POOL].sort(() => Math.random() - 0.5);
+  const result = [];
+  let i = 0;
+  while (result.length < target) {
+    pool[i % pool.length].split(' ').forEach(w => result.push(w));
+    i++;
+  }
+  return result.slice(0, target);
+}
+
+function generateWords(count = 100) { words = buildWordList(count); }
+
+let wordsInner = null;
+
+function renderWords() {
+  while (wordsDisplay.firstChild) wordsDisplay.removeChild(wordsDisplay.firstChild);
+
+  wordsInner = document.createElement('div');
+  wordsInner.id = 'words-inner';
+  wordsDisplay.appendChild(wordsInner);
+  wordsInner.appendChild(cursorBeam);  // cursor lives inside wordsInner
+
+  wordElements = []; charElements = [];
+  words.forEach(word => {
+    const wordEl = document.createElement('span');
+    wordEl.className = 'word';
+    const charEls = [];
+    word.split('').forEach(ch => {
+      const charEl = document.createElement('span');
+      charEl.className = 'char';
+      charEl.textContent = ch;
+      wordEl.appendChild(charEl);
+      charEls.push(charEl);
+    });
+    wordsInner.appendChild(wordEl);
+    wordElements.push(wordEl);
+    charElements.push(charEls);
+  });
+}
+
+function autoScrollToWord(index) {
+  if (!wordsInner || index >= wordElements.length) return;
+  const wordEl = wordElements[index];
+  const containerRect = wordsDisplay.getBoundingClientRect();
+  const wordRect = wordEl.getBoundingClientRect();
+  // current translateY
+  const currentY = parseFloat(wordsInner.style.transform.replace('translateY(','').replace(')','').replace('px','') || 0);
+  const wordTop = wordRect.top - containerRect.top - currentY;
+  // keep current word in top third of visible area
+  const targetY = wordTop - containerRect.height * 0.18;
+  if (targetY > 0) {
+    wordsInner.style.transform = `translateY(-${targetY}px)`;
+  }
+}
+
+function spawnSpark(x, y) {
+  const spark = document.createElement('div');
+  spark.className = 'cursor-spark';
+  spark.style.left = x + 'px';
+  spark.style.top  = y + 'px';
+  (wordsInner || wordsDisplay).appendChild(spark);
+  setTimeout(() => spark.remove(), 520);
+}
+
+function moveCursor() {
+  if (finished || currentWordIndex >= words.length) { cursorBeam.style.display = 'none'; return; }
+  const ref = wordsInner || wordsDisplay;
+  const cRect = ref.getBoundingClientRect();
+  let left, top, height;
+  if (currentCharIndex === 0) {
+    const first = charElements[currentWordIndex]?.[0];
+    if (!first) return;
+    const r = first.getBoundingClientRect();
+    left = r.left - cRect.left - 2;
+    top  = r.top  - cRect.top  + r.height * 0.1;
+    height = r.height * 0.78;
+  } else {
+    const prev = charElements[currentWordIndex]?.[Math.min(currentCharIndex-1, words[currentWordIndex].length-1)];
+    if (!prev) return;
+    const r = prev.getBoundingClientRect();
+    left = r.right - cRect.left;
+    top  = r.top   - cRect.top  + r.height * 0.1;
+    height = r.height * 0.78;
+  }
+  cursorBeam.style.display = 'block';
+  cursorBeam.style.left   = left + 'px';
+  cursorBeam.style.top    = top  + 'px';
+  cursorBeam.style.height = height + 'px';
+  if (started && !finished) spawnSpark(left + 1, top + height * 0.5);
+}
+
+function animateCountUp(el, target, duration, suffix = '') {
+  // Animate digits falling/rolling one by one
+  const str = String(target) + suffix;
+  el.textContent = '';
+  el.style.display = 'inline-block';
+
+  // Create a span per character, each drops in sequentially
+  str.split('').forEach((ch, i) => {
+    const span = document.createElement('span');
+    span.className = 'digit-drop';
+    span.style.animationDelay = (i * 110) + 'ms';
+    // For numeric digits, do a roll-up count effect
+    if (/\d/.test(ch)) {
+      const digitVal = parseInt(ch);
+      // Start from a higher digit and tick down to real value
+      span.dataset.target = ch;
+      span.textContent = String((digitVal + 7) % 10); // start offset
+      let ticks = 0;
+      const totalTicks = 7 + digitVal; // land on correct digit
+      const tickInterval = Math.max(30, (duration * 0.55) / totalTicks);
+      setTimeout(() => {
+        const iv = setInterval(() => {
+          ticks++;
+          const cur = parseInt(span.textContent);
+          span.textContent = String((cur + 1) % 10);
+          if (ticks >= totalTicks) {
+            clearInterval(iv);
+            span.textContent = ch;
+          }
+        }, tickInterval);
+      }, i * 110);
+    } else {
+      span.textContent = ch;
+    }
+    el.appendChild(span);
+  });
+}
+
+function showInlineResults() {
+  const wpm = Math.round((correctChars / 5) / (selectedTime / 60));
+  const acc = totalTyped > 0 ? Math.round((correctChars / totalTyped) * 100) : 0;
+
+  statsPanel.innerHTML = `
+    <div class="stat animate-in">
+      <span class="stat-value big result-wpm"></span>
+      <span class="stat-label">WPM</span>
+    </div>
+    <div class="stat animate-in">
+      <span class="stat-value big result-acc"></span>
+      <span class="stat-label">Accuracy</span>
+    </div>
+    <div class="stat animate-in">
+      <span class="stat-value result-chars"></span>
+      <span class="stat-label">Characters</span>
+    </div>
+    <div class="stat animate-in">
+      <span class="stat-value result-errors"></span>
+      <span class="stat-label">Errors</span>
+    </div>
+  `;
+  statsPanel.classList.replace('during-test', 'show-results');
+
+  // Staggered digit-drop reveals
+  setTimeout(() => animateCountUp(document.querySelector('.result-wpm'),   wpm,        900),       80);
+  setTimeout(() => animateCountUp(document.querySelector('.result-acc'),   acc,        900, '%'),  280);
+  setTimeout(() => animateCountUp(document.querySelector('.result-chars'), totalTyped, 700),       480);
+  setTimeout(() => animateCountUp(document.querySelector('.result-errors'),totalErrors,700),       650);
+}
+
+function restoreStatsPanel() {
+  statsPanel.innerHTML = `
+    <div class="stat">
+      <span class="stat-value" id="time-display">${selectedTime}</span>
+      <span class="stat-label">Time Left</span>
+    </div>
+    <div class="stat" id="quote-cell">
+      <span class="stat-quote" id="live-quote"></span>
+    </div>
+  `;
+  if (statsPanel.classList.contains('show-results'))
+    statsPanel.classList.replace('show-results', 'during-test');
+}
+
+function startTyping() {
+  if (started) return;
+  started = true;
+  stopChallengeRotation();
+  clickPrompt.classList.add('hidden');
+  wordsDisplay.classList.add('active-typing');
+  document.getElementById('words-area').classList.add('typing-glow');
+  mainCard.classList.add('focused');
+
+  // Show first live quote immediately
+  setQuoteText("Let's go - show what you've got.");
+  lastQuoteUpdate = Date.now();
+
+  timerBar.style.transition = 'none';
+  timerBar.style.transform  = 'scaleX(1)';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    timerBar.classList.add('running');
+    timerBarWrap.classList.add('running');
+    timerBar.style.transition = `transform ${selectedTime}s linear`;
+    timerBar.style.transform  = 'scaleX(0)';
+  }));
+
+  timer = setInterval(() => {
+    timeLeft--;
+    const td = document.getElementById('time-display');
+    if (td) {
+      td.textContent = timeLeft;
+      // Tick animation — remove then re-add to restart
+      td.classList.remove('time-tick');
+      void td.offsetWidth;
+      td.classList.add('time-tick');
+      // Urgency mode for last 10 seconds
+      if (timeLeft <= 10) td.classList.add('urgent');
+      else td.classList.remove('urgent');
+    }
+    updateLiveQuote();
+    if (timeLeft <= 0) { clearInterval(timer); endTest(); }
+  }, 1000);
+}
+
+function endTest() {
+  finished = true;
+  hiddenInput.blur();
+  cursorBeam.style.display = 'none';
+  timerBar.classList.remove('running');
+  timerBarWrap.classList.remove('running');
+  mainCard.classList.remove('focused');
+  wordsDisplay.classList.remove('active-typing');
+  document.getElementById('words-area').classList.remove('typing-glow');
+  showInlineResults();
+}
+
+function commitWord(typedInput) {
+  const typed = typedInput.trim();
+  const currentWord = words[currentWordIndex];
+  for (let i = currentCharIndex; i < currentWord.length; i++)
+    charElements[currentWordIndex][i]?.classList.add('wrong');
+  const compareLen = Math.max(typed.length, currentWord.length);
+  for (let i = 0; i < compareLen; i++) {
+    totalTyped++;
+    if (i < typed.length && i < currentWord.length && typed[i] === currentWord[i]) correctChars++;
+    else totalErrors++;
+  }
+  if (typed !== currentWord) {
+    const wEl = wordElements[currentWordIndex];
+    wEl.classList.add('shake');
+    setTimeout(() => wEl.classList.remove('shake'), 300);
+  }
+  currentWordIndex++; currentCharIndex = 0; hiddenInput.value = '';
+  if (typed === words[currentWordIndex - 1]) {
+    const prevEl = wordElements[currentWordIndex - 1];
+    if (prevEl) {
+      prevEl.classList.add('committed');
+      setTimeout(() => prevEl.classList.remove('committed'), 420);
+      spawnFloatParticle(prevEl);
+    }
+  }
+  if (currentWordIndex >= words.length) { endTest(); return; }
+  autoScrollToWord(currentWordIndex);
+  updateLiveQuote(true); // force quote update on each word commit
+}
+
+hiddenInput.addEventListener('input', () => {
+  if (finished) return;
+  const inputVal = hiddenInput.value;
+  const currentWord = words[currentWordIndex];
+
+  if (inputVal.endsWith(' ')) {
+    commitWord(inputVal);
+  } else {
+    currentCharIndex = inputVal.length;
+    charElements[currentWordIndex]?.forEach((charEl, i) => {
+      const wasWrong = charEl.classList.contains('wrong');
+      charEl.classList.remove('correct', 'wrong');
+      if (i < inputVal.length) {
+        if (inputVal[i] === currentWord[i]) {
+          charEl.classList.add('correct');
+        } else {
+          if (!wasWrong) void charEl.offsetWidth;
+          charEl.classList.add('wrong');
+        }
+      }
+    });
+    updateLiveQuote();
+  }
+  moveCursor();
+});
+
+hiddenInput.addEventListener('keydown', e => {
+  if (e.key === 'Backspace' && hiddenInput.value === '') e.preventDefault();
+});
+
+
+document.addEventListener('keydown', e => {
+  // Tab = restart always
+  if (e.key === 'Tab') { e.preventDefault(); generateWords(); resetTest(); return; }
+
+  // If not started and key is a printable character, focus input and start
+  if (!started && !finished && e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+    hiddenInput.focus();
+    startTyping();
+    // Let the keypress fall through to the input naturally
+  }
+});
+
+// Click on words area also focuses (but doesn't start until key)
+document.getElementById('words-area').addEventListener('click', () => {
+  if (!finished) { hiddenInput.focus(); }
+});
+
+hiddenInput.addEventListener('blur', () => {
+  if (!started && !finished) mainCard.classList.remove('focused');
+});
+
+function resetTest() {
+  clearInterval(timer);
+  stopChallengeRotation();
+  started = finished = false;
+  currentWordIndex = currentCharIndex = 0;
+  totalTyped = totalErrors = correctChars = 0;
+  lastQuoteUpdate = 0; lastTier = ''; lastLiveIdx = -1;
+  timeLeft = selectedTime;
+
+  timerBar.classList.remove('running');
+  timerBarWrap.classList.remove('running');
+  timerBar.style.transition = 'none';
+  timerBar.style.transform  = 'scaleX(1)';
+  hiddenInput.value = '';
+  clickPrompt.classList.remove('hidden');
+  cursorBeam.style.display = 'none';
+  mainCard.classList.remove('focused');
+  wordsDisplay.classList.remove('active-typing');
+  document.getElementById('words-area').classList.remove('typing-glow');
+  if (wordsInner) wordsInner.style.transform = 'translateY(0)';
+
+  restoreStatsPanel();
+  renderWords();
+  startChallengeRotation();   // restart aggressive quote rotation
+  requestAnimationFrame(moveCursor);
+}
+
+// Button ripple
+document.querySelectorAll('.btn, .opt-btn').forEach(btn => {
+  btn.style.position = 'relative';
+  btn.style.overflow = 'hidden';
+  btn.addEventListener('click', e => {
+    const r = document.createElement('span');
+    r.className = 'btn-ripple';
+    const rect = btn.getBoundingClientRect();
+    r.style.left = (e.clientX - rect.left) + 'px';
+    r.style.top  = (e.clientY - rect.top)  + 'px';
+    btn.appendChild(r);
+    setTimeout(() => r.remove(), 650);
+  });
+});
+
+// Float +word particle on correct word commit
+function spawnFloatParticle(wordEl) {
+  const r = wordEl.getBoundingClientRect();
+  const ref = wordsInner || wordsDisplay;
+  const cr = ref.getBoundingClientRect();
+  const p = document.createElement('div');
+  p.className = 'float-particle';
+  p.textContent = '+';
+  p.style.left = (r.left - cr.left + r.width / 2) + 'px';
+  p.style.top  = (r.top  - cr.top)  + 'px';
+  ref.appendChild(p);
+  setTimeout(() => p.remove(), 800);
+}
+
+document.getElementById('restart-btn').addEventListener('click', () => { generateWords(); resetTest(); });
+
+document.querySelectorAll('[data-time]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-time]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedTime = parseInt(btn.dataset.time);
+    generateWords(selectedTime >= 60 ? 180 : 100);
+    resetTest();
+  });
+});
+
+window.addEventListener('resize', moveCursor);
+
+generateWords();
+resetTest();
+
+// ─── BACKGROUND CANVAS ANIMATION ───────────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // ── Floating orbs ──
+  const ORB_COUNT = 6;
+  const orbs = Array.from({ length: ORB_COUNT }, (_, i) => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: 120 + Math.random() * 200,
+    vx: (Math.random() - 0.5) * 0.35,
+    vy: (Math.random() - 0.5) * 0.35,
+    opacity: 0.03 + Math.random() * 0.04,
+    phase: Math.random() * Math.PI * 2,
+    speed: 0.0008 + Math.random() * 0.001,
+  }));
+
+  // ── Shooting particles ──
+  const PARTICLE_COUNT = 55;
+  const particles = Array.from({ length: PARTICLE_COUNT }, () => makeParticle());
+
+  function makeParticle() {
+    return {
+      x: Math.random() * (W || window.innerWidth),
+      y: Math.random() * (H || window.innerHeight),
+      size: 0.6 + Math.random() * 1.6,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: -0.15 - Math.random() * 0.45,
+      opacity: 0.08 + Math.random() * 0.22,
+      life: Math.random(),         // 0–1, respawns at 0
+      decay: 0.0015 + Math.random() * 0.003,
+    };
+  }
+
+  // ── Pulse rings ──
+  const rings = [];
+  function spawnRing() {
+    rings.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: 0,
+      maxR: 180 + Math.random() * 220,
+      opacity: 0.12,
+      speed: 0.6 + Math.random() * 0.7,
+    });
+  }
+  setInterval(spawnRing, 2200);
+  spawnRing();
+
+  // ── Constellation lines ──
+  // Connect nearby particles with faint lines
+  function drawConstellation() {
+    const maxDist = 90;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < maxDist) {
+          const alpha = (1 - d / maxDist) * 0.06;
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(245,197,66,${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  // ── Golden Sparkles / Sprinkles ──
+  const SPARKLE_COUNT = 70;
+
+  function makeStar() {
+    return {
+      x:       Math.random() * (W || window.innerWidth),
+      y:       Math.random() * (H || window.innerHeight),
+      size:    0.8 + Math.random() * 2.2,
+      points:  Math.random() < 0.5 ? 4 : 6,   // 4-point diamond or 6-point star
+      rot:     Math.random() * Math.PI * 2,
+      rotSpeed:(Math.random() - 0.5) * 0.04,
+      vx:      (Math.random() - 0.5) * 0.3,
+      vy:      -0.08 - Math.random() * 0.25,
+      opacity: 0,
+      maxOp:   0.35 + Math.random() * 0.5,
+      phase:   Math.random() * Math.PI * 2,
+      twinkleSpeed: 0.025 + Math.random() * 0.04,
+      born:    0,
+      lifespan: 180 + Math.random() * 300,
+      age:     Math.floor(Math.random() * 300), // stagger start
+    };
+  }
+
+  const sparkles = Array.from({ length: SPARKLE_COUNT }, makeStar);
+
+  function drawStar(cx, cy, pts, outer, inner, rot) {
+    ctx.beginPath();
+    for (let i = 0; i < pts * 2; i++) {
+      const r = i % 2 === 0 ? outer : inner;
+      const angle = rot + (i * Math.PI) / pts;
+      i === 0 ? ctx.moveTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle))
+              : ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+    }
+    ctx.closePath();
+  }
+
+  function drawSparkles() {
+    sparkles.forEach((s, idx) => {
+      s.age++;
+      s.rot += s.rotSpeed;
+      s.x   += s.vx;
+      s.y   += s.vy;
+      s.phase += s.twinkleSpeed;
+
+      // fade in → twinkle → fade out
+      const halfLife = s.lifespan * 0.5;
+      if (s.age < halfLife * 0.3) {
+        s.opacity = s.maxOp * (s.age / (halfLife * 0.3));
+      } else if (s.age > s.lifespan * 0.7) {
+        s.opacity = s.maxOp * (1 - (s.age - s.lifespan * 0.7) / (s.lifespan * 0.3));
+      } else {
+        s.opacity = s.maxOp * (0.6 + 0.4 * Math.sin(s.phase));
+      }
+
+      if (s.age > s.lifespan || s.y < -20) {
+        sparkles[idx] = makeStar();
+        sparkles[idx].y = H + 10;
+        sparkles[idx].age = 0;
+        return;
+      }
+
+      const a = Math.max(0, s.opacity);
+      if (a < 0.005) return;
+
+      // Draw sparkle star shape
+      const outer = s.size;
+      const inner = s.size * 0.38;
+      drawStar(s.x, s.y, s.points, outer, inner, s.rot);
+
+      // Gold gradient fill
+      const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, outer * 1.5);
+      grad.addColorStop(0,   `rgba(255,248,214,${a})`);
+      grad.addColorStop(0.5, `rgba(245,197,66,${a * 0.8})`);
+      grad.addColorStop(1,   `rgba(245,197,66,0)`);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Cross-hair shine lines on larger sparkles
+      if (s.size > 1.6) {
+        ctx.save();
+        ctx.globalAlpha = a * 0.6;
+        ctx.strokeStyle = `rgba(255,248,214,${a})`;
+        ctx.lineWidth = 0.5;
+        const arm = s.size * 2.5;
+        ctx.beginPath();
+        ctx.moveTo(s.x - arm, s.y); ctx.lineTo(s.x + arm, s.y);
+        ctx.moveTo(s.x, s.y - arm); ctx.lineTo(s.x, s.y + arm);
+        ctx.stroke();
+        ctx.restore();
+      }
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Orbs
+    orbs.forEach(o => {
+      o.phase += o.speed;
+      const pulse = Math.sin(o.phase) * 0.012;
+      o.x += o.vx;
+      o.y += o.vy;
+      if (o.x < -o.r) o.x = W + o.r;
+      if (o.x > W + o.r) o.x = -o.r;
+      if (o.y < -o.r) o.y = H + o.r;
+      if (o.y > H + o.r) o.y = -o.r;
+      const grad = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+      grad.addColorStop(0,   `rgba(245,197,66,${o.opacity + pulse})`);
+      grad.addColorStop(0.5, `rgba(245,197,66,${(o.opacity + pulse) * 0.4})`);
+      grad.addColorStop(1,   `rgba(245,197,66,0)`);
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    });
+
+    // Constellation lines
+    drawConstellation();
+
+    // Particles
+    particles.forEach((p, idx) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life -= p.decay;
+      if (p.life <= 0 || p.y < -10) {
+        particles[idx] = makeParticle();
+        particles[idx].y = H + 5;
+        return;
+      }
+      const a = p.opacity * p.life;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(245,197,66,${a})`;
+      ctx.fill();
+    });
+
+    // Golden sparkles
+    drawSparkles();
+
+    // Pulse rings
+    for (let i = rings.length - 1; i >= 0; i--) {
+      const ring = rings[i];
+      ring.r += ring.speed;
+      ring.opacity = 0.12 * (1 - ring.r / ring.maxR);
+      if (ring.r >= ring.maxR) { rings.splice(i, 1); continue; }
+      ctx.beginPath();
+      ctx.arc(ring.x, ring.y, ring.r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(245,197,66,${ring.opacity})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+</script>
+</body>
+</html>
