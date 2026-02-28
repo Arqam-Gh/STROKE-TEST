@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SDT515DRKP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SDT515DRKP');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>STROKE TEST — Typing Speed Test | WPM & Accuracy</title>
@@ -71,7 +80,7 @@
   .wrapper {
     width: 100%; max-width: 1300px;
     padding: 0 28px 10px;
-    margin-top: 10px;
+    margin-top: 22px;
     display: flex; flex-direction: column; gap: 6px;
     position: relative; z-index: 1;
     height: calc(100vh - 20px);
@@ -355,9 +364,36 @@
     0%   { left: -80%; }
     100% { left: 130%; }
   }
-  /* unused but kept to not break anything referencing these names */
-  @keyframes optActivePop { 0%,100% { transform:scale(1); } }
-  @keyframes optGlowPulse { 0%,100% { box-shadow:none; } }
+  /* ── Mode selector (same pill-track pattern as duration) ── */
+  .mode-track {
+    position: relative;
+    display: flex;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border);
+    padding: 3px;
+    gap: 0;
+  }
+  .mode-pill {
+    position: absolute;
+    top: 3px; bottom: 3px;
+    background: var(--accent);
+    transition: left 0.32s cubic-bezier(0.34,1.56,0.64,1), width 0.32s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .mode-option {
+    position: relative; z-index: 1;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;
+    color: var(--muted2);
+    background: transparent; border: none;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+  }
+  .mode-option.active { color: #000; }
+  .mode-option:not(.active):hover { color: var(--accent); }
 
   .timer-bar-wrap {
     flex-shrink: 0;
@@ -397,7 +433,7 @@
   .click-prompt {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(10,10,10,0.42);   /* words visible through */
+    background: transparent;
     z-index: 20; opacity: 1;
     transition: opacity 0.35s ease;
   }
@@ -487,7 +523,7 @@
   .words-display::after {
     content: ''; position: absolute; bottom: 0; left: 0; right: 0;
     height: 22%; pointer-events: none; z-index: 6;
-    background: linear-gradient(to bottom, transparent 0%, var(--bg) 100%);
+    background: linear-gradient(to bottom, transparent 0%, transparent 100%);
   }
 
   /* words-inner scrolls via translateY */
@@ -590,25 +626,73 @@
     animation: floatUp 0.75s ease forwards;
   }
 
-  /* Timer tick animation */
-  @keyframes timerTick {
-    0%   { transform: scale(1); }
-    18%  { transform: scale(1.22); color: #fff8d6; text-shadow: 0 0 18px rgba(245,197,66,1), 0 0 40px rgba(245,197,66,0.5); }
-    40%  { transform: scale(0.93); }
-    65%  { transform: scale(1.04); }
-    100% { transform: scale(1); }
+  /* ════════════════════════════════════════════
+     CIRCULAR ARC COUNTDOWN TIMER
+     SVG ring drains clockwise · number in centre
+  ════════════════════════════════════════════ */
+  #time-display {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 72px;
+    height: 72px;
   }
-  .time-tick {
-    display: inline-block;
-    animation: timerTick 0.5s cubic-bezier(0.22,1,0.36,1);
+  .arc-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    transform: rotate(-90deg);
+    overflow: visible;
   }
-
-  /* Urgency pulse when <= 10s */
-  @keyframes urgentPulse {
-    0%, 100% { color: var(--accent); text-shadow: 0 0 6px rgba(245,197,66,0.4); }
-    50%       { color: #ff6b35; text-shadow: 0 0 22px rgba(255,107,53,0.9), 0 0 40px rgba(255,107,53,0.4); }
+  .arc-track {
+    fill: none;
+    stroke: rgba(245,197,66,0.1);
+    stroke-width: 3;
   }
-  .stat-value.urgent { animation: urgentPulse 0.7s ease-in-out infinite; }
+  .arc-progress {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1), stroke 0.3s ease;
+    filter: drop-shadow(0 0 4px rgba(245,197,66,0.9)) drop-shadow(0 0 10px rgba(245,197,66,0.45));
+  }
+  .arc-number {
+    position: absolute;
+    inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.55rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-shadow: 0 0 10px rgba(245,197,66,0.55);
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    line-height: 1;
+  }
+  @keyframes arcTick {
+    0%   { filter: drop-shadow(0 0 7px rgba(245,197,66,1)) drop-shadow(0 0 18px rgba(245,197,66,0.7)); }
+    100% { filter: drop-shadow(0 0 4px rgba(245,197,66,0.9)) drop-shadow(0 0 10px rgba(245,197,66,0.45)); }
+  }
+  .arc-progress.ticked { animation: arcTick 0.5s ease-out forwards; }
+  #time-display.urgent .arc-progress {
+    stroke: #ff4422;
+    filter: drop-shadow(0 0 5px rgba(255,68,34,1)) drop-shadow(0 0 14px rgba(255,68,34,0.6));
+    animation: arcUrgentPulse 0.65s ease-in-out infinite;
+  }
+  #time-display.urgent .arc-number {
+    color: #ff4422;
+    text-shadow: 0 0 14px rgba(255,68,34,0.9), 0 0 28px rgba(255,68,34,0.4);
+    animation: arcNumPulse 0.65s ease-in-out infinite;
+  }
+  @keyframes arcUrgentPulse {
+    0%, 100% { filter: drop-shadow(0 0 5px rgba(255,68,34,1)) drop-shadow(0 0 14px rgba(255,68,34,0.6)); }
+    50%       { filter: drop-shadow(0 0 9px rgba(255,68,34,1)) drop-shadow(0 0 26px rgba(255,68,34,0.8)); }
+  }
+  @keyframes arcNumPulse {
+    0%, 100% { text-shadow: 0 0 14px rgba(255,68,34,0.9); }
+    50%       { text-shadow: 0 0 22px rgba(255,68,34,1), 0 0 40px rgba(255,68,34,0.5); }
+  }
 
   /* Row entrance animation for words */
   @keyframes rowIn {
@@ -1007,7 +1091,13 @@
     </div>
     <div class="header-right">
       <div class="tagline">Speed · Accuracy · Flow</div>
-      <div class="hint-tag">Tab = Restart</div>
+      <div class="mode-track" id="mode-track">
+        <div class="mode-pill" id="mode-pill"></div>
+        <button class="mode-option active" data-mode="normal">lowercase</button>
+        <button class="mode-option" data-mode="caps">Gradual</button>
+        <button class="mode-option" data-mode="punct">Punctuation+</button>
+      </div>
+      <div class="hint-tag" style="display:none">Tab = Restart</div>
     </div>
   </header>
 
@@ -1015,7 +1105,7 @@
 
     <div class="stats-panel during-test" id="stats-panel">
       <div class="stat">
-        <span class="stat-value" id="time-display">—</span>
+        <span id="time-display" style="display:inline-flex;align-items:center;gap:6px;"></span>
         <span class="stat-label">Time Left</span>
       </div>
       <div class="stat" id="quote-cell">
@@ -1065,7 +1155,7 @@
       </div>
     </button>
     <span class="hint-small">Space = next word &nbsp;·&nbsp; Tab = restart</span>
-    <span style="margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:0.78rem; font-weight:600; color:var(--muted2); letter-spacing:1px; text-transform:uppercase;">MADE BY MUHAMMAD ARQAM GHAYOUR WITH ❤️</span>
+    <span style="margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:0.78rem; font-weight:600; color:var(--muted2); letter-spacing:1px; text-transform:uppercase;">MADE BY MUHAMMAD ARQAM GHAYOUR ❤️</span>
   </div>
 
 </div>
@@ -1192,9 +1282,102 @@ const SENTENCE_POOL = [
   "the painting had been hanging upside down in the gallery for three weeks before anyone said anything",
 ];
 
+// ── MODE: Capitals with commas (grammatically correct sentences) ──
+const SENTENCE_POOL_CAPS = [
+  "The morning light was pale, quiet, and full of promise.",
+  "She opened the letter slowly, then set it down without reading further.",
+  "Every summer, they returned to the same small town by the coast.",
+  "The market was loud, colorful, and impossible to navigate on a Saturday.",
+  "He practiced for hours, and by evening, he finally got it right.",
+  "Clouds gathered quickly, and the air turned cold before noon.",
+  "The café was warm, dimly lit, and always smelled of fresh coffee.",
+  "She packed her bag the night before, then repacked it twice more.",
+  "The road curved sharply, then widened into a long, flat stretch.",
+  "He read the instructions carefully, paused, and started from the beginning.",
+  "The old bridge was narrow, mossy, and slightly terrifying to cross.",
+  "Rain came without warning, soaking everything left outside overnight.",
+  "She planted the seeds in the spring, watered them daily, and waited.",
+  "The meeting ran long, ended badly, and left everyone exhausted.",
+  "He cooked a simple meal, set the table, and ate alone by the window.",
+  "The library was closed on Mondays, so she sat on the steps and read anyway.",
+  "The fog was thick, disorienting, and slower to lift than expected.",
+  "She called twice, left no message, and did not try again that evening.",
+  "The engine coughed, sputtered, and finally fell silent on the highway.",
+  "He arrived early, chose a seat near the back, and waited for the others.",
+  "The trail climbed steeply, leveled off briefly, and then climbed again.",
+  "She finished the painting on a Thursday, framed it, and gave it away.",
+  "The storm knocked out power, flooded the basement, and lasted three days.",
+  "He studied the map, folded it poorly, and asked for directions anyway.",
+  "The cat watched the bird, crouched low, and then completely lost interest.",
+  "She laughed at the joke, apologized for laughing, and then laughed again.",
+  "The submission deadline passed quietly, and nobody mentioned it afterward.",
+  "He fixed the leak, cleaned up the mess, and discovered a second leak.",
+  "The presentation went well, the questions were difficult, and lunch was late.",
+  "She turned thirty on a rainy Tuesday, ate cake alone, and felt perfectly fine.",
+  "The building was old, drafty, and beloved by everyone who worked inside it.",
+  "He wrote the email, deleted it, rewrote it, and finally hit send at midnight.",
+  "The keys were on the table, then in her pocket, and then nowhere at all.",
+  "She learned to drive at forty, passed on the third attempt, and never looked back.",
+  "The concert was loud, overcrowded, and absolutely worth every moment of it.",
+  "He borrowed the book, renewed it twice, and returned it without finishing.",
+  "The town was small, quiet, and famous for nothing in particular.",
+  "She ran every morning before work, except on the days that mattered most.",
+  "The window was open, the curtain was moving, and nobody was in the room.",
+  "He noticed the error, fixed it silently, and mentioned it to no one.",
+];
+
+// ── MODE: Real Test with punctuation ──
+const SENTENCE_POOL_PUNCT = [
+  "Wait; I need to think about this more carefully before we proceed.",
+  "She asked, \"Are you sure?\" and he replied, \"I've never been more certain.\"",
+  "The options are simple: work harder, work smarter, or accept the result.",
+  "It wasn't the destination that mattered; it was the decision to leave.",
+  "He said, \"Don't worry,\" but his hands told a completely different story.",
+  "The contract specified three things: quality, speed, and zero exceptions.",
+  "She paused mid-sentence, looked up, and said, \"That's not what I meant.\"",
+  "There's a fine line between confidence and arrogance; he crossed it daily.",
+  "The note read: \"Gone fishing. Back never. Don't touch my things.\"",
+  "Did you check the report? I left it on your desk before the 9 a.m. meeting.",
+  "He typed quickly, deleted half of it, and started again: \"Dear sir/madam...\"",
+  "The question isn't whether it works; the question is whether it lasts.",
+  "She whispered, \"Can you hear that?\" and they both stopped breathing.",
+  "The recipe calls for: two eggs, one cup of flour, and a pinch of patience.",
+  "Why did nobody say anything? The answer was obvious to everyone in the room.",
+  "He wrote in the margin: \"False? Check source.\" and circled it three times.",
+  "The clock read 3:47 a.m.; she hadn't slept, and she wasn't planning to.",
+  "\"Trust the process,\" she said, but the process had failed them twice before.",
+  "The sign above the door read: \"Enter at your own risk / Exit freely.\"",
+  "He asked one question: \"Why?\" She thought about it for the rest of her life.",
+  "The old saying goes: \"Measure twice, cut once\" — advice he always ignored.",
+  "She left a voicemail that said: \"Call me back. It's not urgent; it is, though.\"",
+  "The choices narrowed to two: stay and fight, or leave and never explain.",
+  "\"You were right,\" he finally admitted; it took him three years to say it.",
+  "The file was labeled: \"Final_v3_REAL_final / do not edit.\"",
+  "She smiled and said, \"Of course,\" but her eyes were asking a different question.",
+  "The error log showed one warning: \"Unexpected input; process terminated.\"",
+  "Why rush? The deadline passed; the damage was done; the lesson was free.",
+  "He underlined two words: \"never again\" — then underlined them a second time.",
+  "The instruction manual read: \"If this fails, try again; if it fails twice, call us.\"",
+  "\"I'll be five minutes,\" she said; forty-five minutes later, she reappeared.",
+  "The report concluded: \"Insufficient data; further study is strongly recommended.\"",
+  "He read the email twice: once for content, once to decide whether to reply.",
+  "The path split into three: left toward the river, right toward the road, straight into the unknown.",
+  "\"Don't quote me on this,\" she said; naturally, he quoted her on everything.",
+  "The system responded: \"Error 404 / Resource not found; please try again.\"",
+  "She had two fears: failing publicly, and succeeding without anyone noticing.",
+  "The letter began: \"By the time you read this...\" and ended without explanation.",
+  "He completed the task; nobody acknowledged it; he completed it again anyway.",
+  "The agenda listed three items: introductions, the problem, and \"other business.\"",
+];
+
+let selectedMode = 'normal'; // 'normal' | 'caps' | 'punct'
+
 function buildWordList(target) {
+  const pool = selectedMode === 'caps'  ? SENTENCE_POOL_CAPS
+             : selectedMode === 'punct' ? SENTENCE_POOL_PUNCT
+             : SENTENCE_POOL;
   // Shuffle sentences and pick unique ones — never repeat a sentence
-  const shuffled = [...SENTENCE_POOL].sort(() => Math.random() - 0.5);
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
   const result = [];
   let sentenceIdx = 0;
   while (result.length < target) {
@@ -1212,15 +1395,15 @@ function buildWordList(target) {
 
 
 const CHALLENGE_QUOTES = [
-  "FREE PALESTINE!",
-  "GANG, show them your actual power!",
-  "it's giving speed. it's giving accuracy. STROKE!",
-  "CAN cook this time, doesn't seems so.",
-  "Stop Staring Start Testing.",
-  "Seems like a NOOB has Arrived to test SKILLS.",
-  "WANNA GAIN AURA, STROKE!",
+  "no cap, your WPM is about to go crazy 🔥",
+  "bestie, the keyboard said choose violence",
+  "it's giving speed. it's giving accuracy. slay.",
+  "POV: you actually cooked this time fr fr",
+  "main character energy only. type like you mean it.",
+  "the rizz is irrelevant. fingers on keys. now.",
+  "not me manifesting your highest WPM yet 💅",
   "okay but what if you just... didn't miss a single key",
-  "touch grass later. touch keys now !",
+  "touch grass later. touch keys now.",
   "lowkey obsessed with how fast you're about to go",
   "era of zero typos starts rn bestie",
   "the delulu is the solulu. believe you're fast. be fast.",
@@ -1231,11 +1414,11 @@ const CHALLENGE_QUOTES = [
 
 const LIVE_QUOTES = {
   slowPoor: [
-    "Gang... are you okay? 💀",
-    "Now way, You should start voice typing!",
-    "ABSOLUTE CENIMA!",
+    "bestie... are you okay? 💀",
+    "this ain't it and we both know it fr",
+    "no cap that was tragic. try again bestie.",
     "the keyboard is not the problem just saying 😭",
-    "Yes, there is no fault in the keyboard, it can be someone's skill issue.",
+    "touch typing could never be your villain origin story",
   ],
   slowOkay: [
     "it's giving... effort. we respect the grind.",
@@ -1380,7 +1563,7 @@ function startChallengeRotation() {
   // Show immediately via typewriter
   setQuoteText(CHALLENGE_QUOTES[challengeIdx]);
   // Rotate every 4 seconds
-  challengeInterval = setInterval(rotateChallengeQuote, 4000);
+  challengeInterval = setInterval(rotateChallengeQuote, 5500);
 }
 
 function stopChallengeRotation() {
@@ -1393,7 +1576,7 @@ let lastQuoteUpdate = 0;
 function updateLiveQuote(force = false) {
   if (!started || finished) return;
   const now = Date.now();
-  if (!force && now - lastQuoteUpdate < 3000) return; // update max every 3s
+  if (!force && now - lastQuoteUpdate < 5500) return; // update max every 5.5s
   lastQuoteUpdate = now;
 
   const elapsed = Math.max(selectedTime - timeLeft, 1);
@@ -1572,7 +1755,7 @@ function showInlineResults() {
 function restoreStatsPanel() {
   statsPanel.innerHTML = `
     <div class="stat">
-      <span class="stat-value" id="time-display">${selectedTime}</span>
+      <span id="time-display" style="display:inline-flex;align-items:center;gap:6px;"></span>
       <span class="stat-label">Time Left</span>
     </div>
     <div class="stat" id="quote-cell">
@@ -1581,6 +1764,49 @@ function restoreStatsPanel() {
   `;
   if (statsPanel.classList.contains('show-results'))
     statsPanel.classList.replace('show-results', 'during-test');
+}
+
+// ── CIRCULAR ARC COUNTDOWN RENDERER ────────────────────────────────────────
+// r=30 → circumference = 2π×30 ≈ 188.5
+const ARC_R = 30;
+const ARC_C = 2 * Math.PI * ARC_R;
+let _arcTotal = 30; // set to selectedTime on init
+
+function renderArcTimer(container, seconds) {
+  const fraction = Math.max(0, seconds / _arcTotal);
+  const offset   = ARC_C * (1 - fraction); // how much of the arc is "consumed"
+  const label    = seconds >= 60
+    ? Math.floor(seconds/60) + ':' + String(seconds%60).padStart(2,'0')
+    : String(seconds);
+
+  // Re-use existing SVG if present, just update values — avoids re-creating DOM
+  let prog = container.querySelector('.arc-progress');
+  let num  = container.querySelector('.arc-number');
+  if (!prog) {
+    // First render — build structure
+    container.innerHTML = `
+      <svg class="arc-svg" viewBox="0 0 72 72">
+        <circle class="arc-track"    cx="36" cy="36" r="${ARC_R}"/>
+        <circle class="arc-progress" cx="36" cy="36" r="${ARC_R}"
+          stroke-dasharray="${ARC_C}"
+          stroke-dashoffset="${offset}"/>
+      </svg>
+      <div class="arc-number">${label}</div>`;
+  } else {
+    prog.setAttribute('stroke-dashoffset', offset);
+    num.textContent = label;
+    // Tick flash
+    prog.classList.remove('ticked');
+    void prog.offsetWidth;
+    prog.classList.add('ticked');
+  }
+}
+
+function initArcTimer(container, total) {
+  _arcTotal = total;
+  // Build fresh
+  container.innerHTML = '';
+  renderArcTimer(container, total);
 }
 
 function startTyping() {
@@ -1609,12 +1835,7 @@ function startTyping() {
     timeLeft--;
     const td = document.getElementById('time-display');
     if (td) {
-      td.textContent = timeLeft;
-      // Tick animation — remove then re-add to restart
-      td.classList.remove('time-tick');
-      void td.offsetWidth;
-      td.classList.add('time-tick');
-      // Urgency mode for last 10 seconds
+      renderArcTimer(td, timeLeft);
       if (timeLeft <= 10) td.classList.add('urgent');
       else td.classList.remove('urgent');
     }
@@ -1671,6 +1892,8 @@ hiddenInput.addEventListener('input', () => {
   const currentWord = words[currentWordIndex];
 
   if (inputVal.endsWith(' ')) {
+    // Do not skip if nothing typed yet (space at start of word)
+    if (inputVal.trim() === '') { hiddenInput.value = ''; return; }
     commitWord(inputVal);
   } else {
     currentCharIndex = inputVal.length;
@@ -1740,14 +1963,20 @@ function resetTest() {
   if (wordsInner) wordsInner.style.transform = 'translateY(0)';
 
   restoreStatsPanel();
+  // Render the initial time as 7-segment display
+  requestAnimationFrame(() => {
+    const td = document.getElementById('time-display');
+    if (td) initArcTimer(td, selectedTime);
+  });
   renderWords();
   startChallengeRotation();   // restart aggressive quote rotation
   requestAnimationFrame(moveCursor);
   requestAnimationFrame(() => positionPill(document.querySelector('.duration-option.active')));
+  requestAnimationFrame(() => positionModePill(document.querySelector('.mode-option.active')));
 }
 
 // Button ripple
-document.querySelectorAll('.btn, .duration-option').forEach(btn => {
+document.querySelectorAll('.btn, .duration-option, .mode-option').forEach(btn => {
   btn.style.position = 'relative';
   btn.style.overflow = 'hidden';
   btn.addEventListener('click', e => {
@@ -1836,6 +2065,35 @@ window.addEventListener('resize', () => {
 });
 
 window.addEventListener('resize', moveCursor);
+
+// ── Mode selector ──
+function positionModePill(activeBtn) {
+  const pill  = document.getElementById('mode-pill');
+  const track = document.getElementById('mode-track');
+  if (!pill || !track || !activeBtn) return;
+  const trackRect = track.getBoundingClientRect();
+  const btnRect   = activeBtn.getBoundingClientRect();
+  pill.style.left  = (btnRect.left - trackRect.left - 3) + 'px';
+  pill.style.width = btnRect.width + 'px';
+}
+
+document.querySelectorAll('.mode-option').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-option').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    positionModePill(btn);
+    selectedMode = btn.dataset.mode;
+    generateWords(selectedTime >= 60 ? 180 : 100);
+    resetTest();
+  });
+});
+
+requestAnimationFrame(() => {
+  positionModePill(document.querySelector('.mode-option.active'));
+});
+window.addEventListener('resize', () => {
+  positionModePill(document.querySelector('.mode-option.active'));
+});
 
 generateWords();
 resetTest();
