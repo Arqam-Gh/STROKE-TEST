@@ -129,12 +129,10 @@
   .logo-stroke::after  { color: #00cfff; }
 
   @keyframes logoStrokeGlitch {
-    /* ── long idle ── */
     0%, 70%, 100% {
       transform: none; opacity: 1; color: var(--accent);
       text-shadow: none; clip-path: none; filter: none;
     }
-    /* ── burst 1: full split ── */
     71%   { transform: translateX(-4px); color: #fff8d6;
             text-shadow: 4px 0 0 rgba(255,48,48,0.7), -4px 0 0 rgba(0,207,255,0.7);
             filter: brightness(1.4); }
@@ -145,11 +143,8 @@
             text-shadow: 2px 0 0 rgba(255,48,48,0.6), -2px 0 0 rgba(0,207,255,0.6);
             filter: brightness(1.8); }
     72.6% { transform: none; color: var(--accent); text-shadow: none; filter: none; }
-    /* ── micro-flicker ── */
     73%   { opacity: 0.15; }
     73.3% { opacity: 1; }
-    /* ── aberration layers on burst 1 ── */
-    /* ── burst 2: clip-slice ── */
     84%   { clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
             transform: translateX(-6px); color: #fff8d6; filter: brightness(1.5); }
     84.3% { clip-path: polygon(0 40%, 100% 40%, 100% 100%, 0 100%);
@@ -159,14 +154,12 @@
             text-shadow: 3px 0 0 rgba(255,48,48,0.5), -3px 0 0 rgba(0,207,255,0.5); }
     85.4% { text-shadow: none; transform: translateX(2px); }
     85.8% { transform: none; opacity: 1; color: var(--accent); }
-    /* ── double micro-flicker after burst 2 ── */
     86.2% { opacity: 0.2; }
     86.5% { opacity: 1; }
     86.8% { opacity: 0.5; }
     87%   { opacity: 1; color: var(--accent); text-shadow: none; }
   }
 
-  /* Red layer animation synced to main */
   @keyframes logoStrokeRed {
     0%, 70%, 74%, 83%, 88%, 100% { opacity: 0; transform: none; }
     71%   { opacity: 0.85; transform: translateX(-6px); }
@@ -180,7 +173,6 @@
     85%   { opacity: 0.6; transform: translateX(-4px); }
     85.4% { opacity: 0; }
   }
-  /* Cyan layer animation synced to main */
   @keyframes logoStrokeCyan {
     0%, 70%, 74%, 83%, 88%, 100% { opacity: 0; transform: none; }
     71%   { opacity: 0.7; transform: translateX(6px); }
@@ -228,7 +220,6 @@
     display: inline-block;
     color: #3a3a3a;
   }
-  /* underline draw on hover */
   .logo::after {
     content: ''; position: absolute; bottom: -2px; left: 0;
     width: 100%; height: 2px; background: var(--accent);
@@ -304,8 +295,6 @@
     transition: opacity 0.4s ease, transform 0.4s ease;
     letter-spacing: 0.2px;
   }
-  .stat-quote.fade { opacity: 0; transform: translateY(6px); -webkit-text-fill-color: transparent; }
-
   @keyframes statReveal {
     from { opacity:0; transform: translateY(10px); }
     to   { opacity:1; transform: translateY(0); }
@@ -324,7 +313,6 @@
   }
   .opt-label { font-size: 0.78rem; font-weight: 700; color: var(--muted2); letter-spacing: 2px; text-transform: uppercase; margin-right: 20px; white-space: nowrap; }
 
-  /* ── Pill track selector ── */
   .duration-track {
     position: relative;
     display: flex;
@@ -333,7 +321,6 @@
     padding: 3px;
     gap: 0;
   }
-  /* Sliding gold pill */
   .duration-pill {
     position: absolute;
     top: 3px; bottom: 3px;
@@ -364,7 +351,6 @@
     0%   { left: -80%; }
     100% { left: 130%; }
   }
-  /* ── Mode selector (same pill-track pattern as duration) ── */
   .mode-track {
     position: relative;
     display: flex;
@@ -395,32 +381,17 @@
   .mode-option.active { color: #000; }
   .mode-option:not(.active):hover { color: var(--accent); }
 
+  /* ── SOLID timer bar — no shimmer, no glow ── */
   .timer-bar-wrap {
     flex-shrink: 0;
-    height: 7px;            /* wider / taller */
-    background: rgba(255,255,255,0.03);
+    height: 7px;
+    background: rgba(255,255,255,0.04);
     position: relative; overflow: hidden;
   }
   .timer-bar {
     height: 100%; width: 100%; transform-origin: left; position: relative;
-    background: linear-gradient(90deg, transparent 0%, var(--accent) 20%, var(--accent2) 50%, var(--accent) 80%, transparent 100%);
-    background-size: 300% 100%;
+    background: var(--accent);
   }
-  .timer-bar.running { animation: barShimmer 1.8s linear infinite; }
-  @keyframes barShimmer {
-    0%   { background-position: 100% 0; }
-    100% { background-position: -100% 0; }
-  }
-  .timer-bar-wrap::after {
-    content: ''; position: absolute; inset: 0;
-    background: var(--accent); opacity: 0; filter: blur(8px); pointer-events: none;
-  }
-  .timer-bar-wrap.running::after { animation: barGlow 2s ease-in-out infinite; }
-  @keyframes barGlow {
-    0%, 100% { opacity: 0.1; }
-    50%       { opacity: 0.3; }
-  }
-
 
   .words-area {
     flex: 1; min-height: 0;
@@ -443,40 +414,42 @@
     display: flex; flex-direction: column; align-items: center; gap: 16px;
   }
 
-  /* Animated "Hit a key to start" box */
+  /* ── Clean, solid "Hit a key to start" box ── */
   .click-prompt-text {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.4rem;
     letter-spacing: 7px;
-    color: var(--accent);
-    border: 1.5px solid var(--accent);
+    color: #000;
+    background: var(--accent);
     padding: 14px 44px;
-    position: relative; overflow: hidden;
-    animation: promptGlow 1.6s ease-in-out infinite;
+    position: relative;
+    animation: promptSolidPulse 2.4s ease-in-out infinite;
     text-transform: uppercase;
+    border: none;
   }
   .click-prompt-text::before {
     content: '';
-    position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(245,197,66,0.18), transparent);
-    animation: promptSweep 1.8s ease-in-out infinite;
+    position: absolute;
+    top: -4px; left: -4px;
+    width: 10px; height: 10px;
+    border-top: 2px solid rgba(255,255,255,0.35);
+    border-left: 2px solid rgba(255,255,255,0.35);
+    pointer-events: none;
   }
-  @keyframes promptSweep {
-    0%   { left: -60%; }
-    100% { left: 130%; }
+  .click-prompt-text::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; right: -4px;
+    width: 10px; height: 10px;
+    border-bottom: 2px solid rgba(0,0,0,0.25);
+    border-right: 2px solid rgba(0,0,0,0.25);
+    pointer-events: none;
   }
-  @keyframes promptGlow {
-    0%, 100% {
-      box-shadow: 0 0 10px rgba(245,197,66,0.25), inset 0 0 10px rgba(245,197,66,0.06);
-      border-color: rgba(245,197,66,0.55); color: rgba(245,197,66,0.8);
-    }
-    50% {
-      box-shadow: 0 0 30px rgba(245,197,66,0.6), inset 0 0 18px rgba(245,197,66,0.12);
-      border-color: var(--accent); color: var(--accent);
-    }
+  @keyframes promptSolidPulse {
+    0%, 100% { background: var(--accent);  opacity: 1; }
+    50%       { background: var(--accent2); opacity: 0.88; }
   }
 
- 
   @keyframes quoteEntrance {
     0%   { opacity: 0; transform: translateY(14px) scale(0.95); filter: blur(4px); }
     100% { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
@@ -519,14 +492,12 @@
     color: #3e3e3e; transition: color 0.4s ease;
   }
   .words-display.active-typing { color: #686868; }
-  /* Last-line fade-out */
   .words-display::after {
     content: ''; position: absolute; bottom: 0; left: 0; right: 0;
     height: 22%; pointer-events: none; z-index: 6;
     background: linear-gradient(to bottom, transparent 0%, transparent 100%);
   }
 
-  /* words-inner scrolls via translateY */
   #words-inner {
     position: relative;
     transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
@@ -548,7 +519,6 @@
     100% { transform: scale(1) rotate(0deg);     opacity: 1; color: var(--wrong); }
   }
 
-  /* NEW: correct char glow ripple */
   @keyframes correctGlow {
     0%   { text-shadow: none; }
     40%  { text-shadow: 0 0 8px rgba(245,197,66,0.9), 0 0 16px rgba(245,197,66,0.5); }
@@ -559,9 +529,6 @@
     animation: correctGlow 0.55s ease forwards;
   }
 
-
-
-  /* NEW: cursor trail sparkles */
   @keyframes sparkFade {
     0%   { opacity: 0.9; transform: scale(1) translateY(0); }
     100% { opacity: 0; transform: scale(0.2) translateY(-14px); }
@@ -572,7 +539,6 @@
     animation: sparkFade 0.5s ease forwards;
   }
 
-  /* NEW: scanline sweep on card when active */
   @keyframes scanSweep {
     0%   { top: -4px; opacity: 0.18; }
     50%  { opacity: 0.35; }
@@ -587,7 +553,6 @@
   }
   .card { position: relative; overflow: hidden; }
 
-  /* NEW: button ripple */
   @keyframes btnRipple {
     0%   { transform: scale(0); opacity: 0.5; }
     100% { transform: scale(4); opacity: 0; }
@@ -600,14 +565,12 @@
     pointer-events: none;
   }
 
-  /* NEW: word commit flash */
   @keyframes wordFlash {
     0%   { background: rgba(245,197,66,0.12); }
     100% { background: transparent; }
   }
   .word.committed { animation: wordFlash 0.4s ease forwards; }
 
-  /* NEW: stat value big bounce on results */
   @keyframes numCount {
     0%   { transform: scale(0.5) translateY(10px); opacity: 0; }
     60%  { transform: scale(1.12) translateY(-3px); opacity: 1; }
@@ -615,7 +578,6 @@
     100% { transform: scale(1) translateY(0); opacity: 1; }
   }
 
-  /* NEW: floating +1 particles on correct word */
   @keyframes floatUp {
     0%   { opacity: 1; transform: translateY(0) scale(1); }
     100% { opacity: 0; transform: translateY(-36px) scale(0.7); }
@@ -627,8 +589,7 @@
   }
 
   /* ════════════════════════════════════════════
-     CIRCULAR ARC COUNTDOWN TIMER
-     SVG ring drains clockwise · number in centre
+     CIRCULAR ARC COUNTDOWN TIMER — solid, no glow, wider stroke
   ════════════════════════════════════════════ */
   #time-display {
     display: inline-flex;
@@ -647,16 +608,15 @@
   }
   .arc-track {
     fill: none;
-    stroke: rgba(245,197,66,0.1);
-    stroke-width: 3;
+    stroke: rgba(245,197,66,0.12);
+    stroke-width: 5;
   }
   .arc-progress {
     fill: none;
     stroke: var(--accent);
-    stroke-width: 3.5;
+    stroke-width: 6;
     stroke-linecap: round;
     transition: stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1), stroke 0.3s ease;
-    filter: drop-shadow(0 0 4px rgba(245,197,66,0.9)) drop-shadow(0 0 10px rgba(245,197,66,0.45));
   }
   .arc-number {
     position: absolute;
@@ -666,42 +626,22 @@
     font-size: 1.55rem;
     letter-spacing: 2px;
     color: var(--accent);
-    text-shadow: 0 0 10px rgba(245,197,66,0.55);
-    transition: color 0.3s ease, text-shadow 0.3s ease;
+    transition: color 0.3s ease;
     line-height: 1;
   }
-  @keyframes arcTick {
-    0%   { filter: drop-shadow(0 0 7px rgba(245,197,66,1)) drop-shadow(0 0 18px rgba(245,197,66,0.7)); }
-    100% { filter: drop-shadow(0 0 4px rgba(245,197,66,0.9)) drop-shadow(0 0 10px rgba(245,197,66,0.45)); }
-  }
-  .arc-progress.ticked { animation: arcTick 0.5s ease-out forwards; }
   #time-display.urgent .arc-progress {
     stroke: #ff4422;
-    filter: drop-shadow(0 0 5px rgba(255,68,34,1)) drop-shadow(0 0 14px rgba(255,68,34,0.6));
-    animation: arcUrgentPulse 0.65s ease-in-out infinite;
   }
   #time-display.urgent .arc-number {
     color: #ff4422;
-    text-shadow: 0 0 14px rgba(255,68,34,0.9), 0 0 28px rgba(255,68,34,0.4);
-    animation: arcNumPulse 0.65s ease-in-out infinite;
-  }
-  @keyframes arcUrgentPulse {
-    0%, 100% { filter: drop-shadow(0 0 5px rgba(255,68,34,1)) drop-shadow(0 0 14px rgba(255,68,34,0.6)); }
-    50%       { filter: drop-shadow(0 0 9px rgba(255,68,34,1)) drop-shadow(0 0 26px rgba(255,68,34,0.8)); }
-  }
-  @keyframes arcNumPulse {
-    0%, 100% { text-shadow: 0 0 14px rgba(255,68,34,0.9); }
-    50%       { text-shadow: 0 0 22px rgba(255,68,34,1), 0 0 40px rgba(255,68,34,0.5); }
   }
 
-  /* Row entrance animation for words */
   @keyframes rowIn {
     from { opacity: 0; transform: translateX(-8px); }
     to   { opacity: 1; transform: translateX(0); }
   }
   .word { display: inline-block; white-space: nowrap; animation: rowIn 0.3s ease both; }
 
-  /* Correct word golden shimmer */
   @keyframes wordGoldShimmer {
     0%   { filter: brightness(1); }
     40%  { filter: brightness(1.6) drop-shadow(0 0 4px rgba(245,197,66,0.7)); }
@@ -709,7 +649,6 @@
   }
   .word.committed { animation: wordGoldShimmer 0.45s ease forwards; }
 
-  /* Stat panel glow on results reveal */
   @keyframes statPanelGlow {
     0%   { box-shadow: none; }
     40%  { box-shadow: 0 0 30px rgba(245,197,66,0.18), inset 0 0 20px rgba(245,197,66,0.06); }
@@ -717,7 +656,6 @@
   }
   .stats-panel.show-results { animation: statPanelGlow 1s ease forwards; }
 
-  /* WPM big number roll-in */
   @keyframes numCount {
     0%   { transform: scale(0.5) translateY(10px); opacity: 0; }
     60%  { transform: scale(1.15) translateY(-3px); opacity: 1; }
@@ -725,22 +663,11 @@
     100% { transform: scale(1) translateY(0); opacity: 1; }
   }
 
-  /* Quote text entrance shimmer */
-  @keyframes quoteShimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position: 200% center; }
-  }
   .stat-quote {
-    background: linear-gradient(90deg, var(--accent) 30%, #fff8d6 50%, var(--accent) 70%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: quoteShimmer 3.5s linear infinite;
+    color: var(--accent);
   }
-  .stat-quote.fade { opacity: 0; transform: translateY(6px); -webkit-text-fill-color: transparent; }
+  .stat-quote.fade { opacity: 0; transform: translateY(6px); }
 
-  /* Char cascade on test start — only untyped chars */
   @keyframes charDrop {
     from { opacity: 0; transform: translateY(-6px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -749,17 +676,16 @@
     animation: charDrop 0.25s ease both;
   }
 
-  /* Edge glow pulse when typing */
   @keyframes edgeGlow {
     0%, 100% { box-shadow: inset 0 0 0px rgba(245,197,66,0); }
     50%       { box-shadow: inset 0 0 22px rgba(245,197,66,0.07); }
   }
-  @keyframes wrongShake {
-    0%, 100% { transform: translateX(0); }
-    20%       { transform: translateX(-6px); }
-    60%       { transform: translateX(6px); }
+  .word.shake { /* shake removed */ }
+
+  /* ── Scrambler CSS transition ── */
+  .char.scrambling {
+    transition: opacity 0.45s ease, color 0.45s ease;
   }
-  .word.shake { animation: wrongShake 0.28s ease; }
 
   /* Cursor */
   #cursor-beam {
@@ -801,7 +727,7 @@
   .btn-primary { background: var(--accent); border-color: var(--accent); color: #000; }
   .btn-primary::after { display: none; }
   .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); color: #000; }
-  /* Digit-drop result reveal */
+
   @keyframes digitFall {
     0%   { opacity: 0; transform: translateY(-28px) scale(1.3); filter: blur(3px); }
     55%  { opacity: 1; transform: translateY(4px)   scale(0.95); filter: blur(0); }
@@ -816,7 +742,7 @@
   .hint-small { font-size: 0.7rem; font-weight: 600; color: var(--muted2); letter-spacing: 1px; margin-left: 4px; }
 
   /* ══════════════════════════════════════════════
-     RESTART BUTTON — Advanced Terminal Exec Button
+     RESTART BUTTON
   ══════════════════════════════════════════════ */
   #restart-btn {
     font-family: 'Bebas Neue', sans-serif !important;
@@ -835,7 +761,6 @@
     height: 40px;
   }
 
-  /* ── Outer shell: the button frame ── */
   #restart-btn .rb-shell {
     display: flex;
     align-items: stretch;
@@ -852,23 +777,19 @@
     border-color: rgba(245,197,66,0.7);
   }
 
-  /* Idle shell glitch — border flickers, subtle horizontal slice shifts */
   @keyframes rbIdleShellGlitch {
     0%, 78%, 100% { border-color: rgba(245,197,66,0.25); transform: none; box-shadow: none; }
-    /* first burst */
     79%   { border-color: rgba(245,197,66,0.8); box-shadow: -3px 0 0 rgba(245,197,66,0.5), 3px 0 0 rgba(51,204,255,0.3); transform: translateX(-2px); }
     79.5% { border-color: rgba(245,197,66,0.15); transform: translateX(3px); box-shadow: 2px 0 0 rgba(245,197,66,0.4); }
     80%   { border-color: rgba(245,197,66,0.7); transform: none; box-shadow: none; }
     80.5% { border-color: rgba(245,197,66,0.2); transform: translateX(-1px); }
     81%   { border-color: rgba(245,197,66,0.25); transform: none; box-shadow: none; }
-    /* second burst, slightly different timing */
     88%   { border-color: rgba(245,197,66,0.6); transform: translateX(2px); box-shadow: -2px 0 0 rgba(255,80,80,0.3), 2px 0 0 rgba(51,204,255,0.25); }
     88.3% { border-color: rgba(245,197,66,0.1); transform: none; }
     88.6% { border-color: rgba(245,197,66,0.55); transform: translateX(-1px); }
     89%   { border-color: rgba(245,197,66,0.25); transform: none; }
   }
 
-  /* Idle icon glitch — the ↺ symbol twitches */
   #restart-btn .rb-icon-inner {
     display: inline-block;
     transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s;
@@ -891,7 +812,6 @@
     89%   { transform: none; opacity: 1; color: var(--accent); }
   }
 
-  /* Idle text glitch — RESTART text slices */
   #restart-btn .rb-text {
     padding: 0 18px;
     display: flex; align-items: center;
@@ -909,20 +829,17 @@
   }
   @keyframes rbIdleTextGlitch {
     0%, 78%, 100% { transform: none; opacity: 1; filter: none; clip-path: none; color: var(--accent); }
-    /* slice top half */
     79%   { clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%); transform: translateX(-4px); filter: brightness(1.6); color: #fff8d6; }
     79.5% { clip-path: polygon(0 45%, 100% 45%, 100% 100%, 0 100%); transform: translateX(4px); filter: brightness(1.3); color: var(--accent); }
     80%   { clip-path: none; transform: none; filter: none; opacity: 0.5; }
     80.5% { opacity: 1; color: var(--accent2); }
     81%   { color: var(--accent); filter: none; clip-path: none; transform: none; }
-    /* second glitch burst */
     88%   { clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%); transform: translateX(3px); color: #fff; filter: brightness(1.4); }
     88.3% { clip-path: polygon(0 0, 100% 0, 100% 55%, 0 55%); transform: translateX(-3px); color: var(--accent2); filter: none; }
     88.6% { clip-path: none; transform: none; opacity: 0.7; color: var(--accent); }
     89%   { opacity: 1; transform: none; clip-path: none; }
   }
 
-  /* ── Charge bar: fills from left on hover, drains on click ── */
   #restart-btn .rb-charge {
     position: absolute;
     bottom: 0; left: 0;
@@ -945,7 +862,6 @@
     filter: blur(1px);
   }
 
-  /* ── Top accent line ── */
   #restart-btn .rb-shell::before {
     content: '';
     position: absolute; top: 0; left: 0; right: 0;
@@ -957,7 +873,6 @@
   }
   #restart-btn:hover .rb-shell::before { opacity: 1; }
 
-  /* ── Icon zone ── */
   #restart-btn .rb-icon {
     width: 40px;
     display: flex; align-items: center; justify-content: center;
@@ -972,12 +887,10 @@
   }
   #restart-btn:hover .rb-icon { border-right-color: rgba(245,197,66,0.35); background: rgba(245,197,66,0.08); }
 
-  /* Icon base rotation on hover */
   #restart-btn:hover .rb-icon-inner {
     transform: rotate(-200deg) scale(1.15);
     animation: none !important;
   }
-  /* Text shimmer sweep on hover */
   #restart-btn .rb-text::after {
     content: '';
     position: absolute; top: 0; bottom: 0; width: 30%;
@@ -991,7 +904,6 @@
     transition: left 0.5s ease 0.05s, opacity 0s;
   }
 
-  /* ── Corner brackets grow on hover ── */
   #restart-btn .rb-corner-tl,
   #restart-btn .rb-corner-br {
     position: absolute;
@@ -1016,9 +928,6 @@
     width: 12px; height: 12px; opacity: 1;
   }
 
-  /* ══ FIRING STATE — plasma ignition sequence ══ */
-
-  /* Shell flash */
   @keyframes rbShellFire {
     0%   { border-color: rgba(245,197,66,0.7); background: #050505; }
     8%   { border-color: #fff; background: rgba(245,197,66,0.18); box-shadow: 0 0 0 2px rgba(245,197,66,0.3), 0 0 30px rgba(245,197,66,0.5), 0 0 60px rgba(245,197,66,0.2); }
@@ -1031,7 +940,6 @@
     animation: rbShellFire 0.55s cubic-bezier(0.22,1,0.36,1) forwards;
   }
 
-  /* Icon spin burst */
   @keyframes rbIconBurst {
     0%   { transform: rotate(0deg) scale(1); filter: none; }
     12%  { transform: rotate(-100deg) scale(0.6); filter: brightness(3) blur(1px); color: #fff; }
@@ -1046,7 +954,6 @@
     color: var(--accent);
   }
 
-  /* Text glitch scramble */
   @keyframes rbTextGlitch {
     0%   { transform: none; opacity: 1; filter: none; }
     10%  { transform: translateX(-3px); filter: blur(0.5px); opacity: 0.7; }
@@ -1060,7 +967,6 @@
     animation: rbTextGlitch 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
   }
 
-  /* Particle sparks that fly out on click — injected via JS */
   @keyframes rbSpark {
     0%   { transform: translate(0,0) scale(1); opacity: 1; }
     100% { transform: translate(var(--sx), var(--sy)) scale(0); opacity: 0; }
@@ -1282,7 +1188,6 @@ const SENTENCE_POOL = [
   "the painting had been hanging upside down in the gallery for three weeks before anyone said anything",
 ];
 
-// ── MODE: Capitals with commas (grammatically correct sentences) ──
 const SENTENCE_POOL_CAPS = [
   "The morning light was pale, quiet, and full of promise.",
   "She opened the letter slowly, then set it down without reading further.",
@@ -1326,7 +1231,6 @@ const SENTENCE_POOL_CAPS = [
   "He noticed the error, fixed it silently, and mentioned it to no one.",
 ];
 
-// ── MODE: Real Test with punctuation ──
 const SENTENCE_POOL_PUNCT = [
   "Wait; I need to think about this more carefully before we proceed.",
   "She asked, \"Are you sure?\" and he replied, \"I've never been more certain.\"",
@@ -1370,13 +1274,12 @@ const SENTENCE_POOL_PUNCT = [
   "The agenda listed three items: introductions, the problem, and \"other business.\"",
 ];
 
-let selectedMode = 'normal'; // 'normal' | 'caps' | 'punct'
+let selectedMode = 'normal';
 
 function buildWordList(target) {
   const pool = selectedMode === 'caps'  ? SENTENCE_POOL_CAPS
              : selectedMode === 'punct' ? SENTENCE_POOL_PUNCT
              : SENTENCE_POOL;
-  // Shuffle sentences and pick unique ones — never repeat a sentence
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   const result = [];
   let sentenceIdx = 0;
@@ -1384,15 +1287,12 @@ function buildWordList(target) {
     const sentence = shuffled[sentenceIdx % shuffled.length];
     sentence.split(' ').forEach(w => { if (result.length < target) result.push(w); });
     sentenceIdx++;
-    // Once we've used all sentences, reshuffle for the next pass
     if (sentenceIdx > 0 && sentenceIdx % shuffled.length === 0) {
       shuffled.sort(() => Math.random() - 0.5);
     }
   }
   return result;
 }
-
-
 
 const CHALLENGE_QUOTES = [
   "no cap, your WPM is about to go crazy 🔥",
@@ -1503,11 +1403,9 @@ function pickLiveQuote(tier) {
 let challengeIdx = Math.floor(Math.random() * CHALLENGE_QUOTES.length);
 let challengeInterval = null;
 
-// ── TYPEWRITER quote engine ──────────────────────────────────────────────
 let typewriterTimer = null;
 
 function typewriterWrite(el, text, onDone) {
-  // Kill any in-progress typewriter
   if (typewriterTimer) { clearTimeout(typewriterTimer); typewriterTimer = null; }
   el.textContent = '';
   el.style.opacity = '1';
@@ -1515,25 +1413,23 @@ function typewriterWrite(el, text, onDone) {
 
   const chars = text.split('');
   let i = 0;
-  // Simulate human typing: base 38ms, random burst/pause zones
   function typeNext() {
     if (i >= chars.length) { if (onDone) onDone(); return; }
     const ch = chars[i];
     el.textContent += ch;
     i++;
-    // Random delay: spaces get short pause, occasionally burst fast, rarely micro-pause
     let delay;
     const r = Math.random();
     if (ch === ' ') {
-      delay = 35 + Math.random() * 55;          // slight pause after space
+      delay = 35 + Math.random() * 55;
     } else if (r < 0.06) {
-      delay = 180 + Math.random() * 200;        // rare hesitation
+      delay = 180 + Math.random() * 200;
     } else if (r < 0.18) {
-      delay = 18 + Math.random() * 14;          // burst speed
+      delay = 18 + Math.random() * 14;
     } else if (r < 0.32) {
-      delay = 65 + Math.random() * 60;          // slower thoughtful
+      delay = 65 + Math.random() * 60;
     } else {
-      delay = 32 + Math.random() * 38;          // normal
+      delay = 32 + Math.random() * 38;
     }
     typewriterTimer = setTimeout(typeNext, delay);
   }
@@ -1543,7 +1439,6 @@ function typewriterWrite(el, text, onDone) {
 function setQuoteText(text) {
   const el = document.getElementById('live-quote');
   if (!el) return;
-  // Fade out first, then type in
   el.style.opacity = '0';
   el.style.transform = 'translateY(6px)';
   el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
@@ -1560,9 +1455,7 @@ function rotateChallengeQuote() {
 }
 
 function startChallengeRotation() {
-  // Show immediately via typewriter
   setQuoteText(CHALLENGE_QUOTES[challengeIdx]);
-  // Rotate every 4 seconds
   challengeInterval = setInterval(rotateChallengeQuote, 5500);
 }
 
@@ -1570,13 +1463,12 @@ function stopChallengeRotation() {
   if (challengeInterval) { clearInterval(challengeInterval); challengeInterval = null; }
 }
 
-
 let lastQuoteUpdate = 0;
 
 function updateLiveQuote(force = false) {
   if (!started || finished) return;
   const now = Date.now();
-  if (!force && now - lastQuoteUpdate < 5500) return; // update max every 5.5s
+  if (!force && now - lastQuoteUpdate < 5500) return;
   lastQuoteUpdate = now;
 
   const elapsed = Math.max(selectedTime - timeLeft, 1);
@@ -1606,23 +1498,118 @@ function generateWords(count = 100) { words = buildWordList(count); }
 
 let wordsInner = null;
 
+// ── PRE-GAME CHAR SCRAMBLER ─────────────────────────────────────────────────
+const SCRAMBLE_CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%*?/';
+let scrambleInterval = null;
+let _scrambleFrame   = 0;
+
+function _randChar() {
+  return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+}
+
+// Animate a single charEl through a few random chars then settle on finalCh
+function _slotChar(charEl, finalCh, delay) {
+  const flickers = 1 + Math.floor(Math.random() * 2);
+  const flickerMs = 220;
+  setTimeout(() => {
+    if (started) return;
+    charEl.classList.add('scrambling');
+    charEl.style.opacity = '0.55';
+    charEl.style.color   = 'rgba(245,197,66,0.55)';
+    let tick = 0;
+    const iv = setInterval(() => {
+      if (started) { clearInterval(iv); return; }
+      tick++;
+      if (tick < flickers) {
+        charEl.textContent = _randChar();
+        charEl.style.opacity = (0.5 + Math.random() * 0.35).toFixed(2);
+        charEl.style.color   = `rgba(245,197,66,${(0.45 + Math.random() * 0.3).toFixed(2)})`;
+      } else {
+        // Settle back to resting state
+        charEl.textContent   = finalCh;
+        charEl.style.opacity = '0.75';
+        charEl.style.color   = 'rgba(175,175,175,0.55)';
+        clearInterval(iv);
+      }
+    }, flickerMs);
+  }, delay);
+}
+
+function startScrambler() {
+  stopScrambler();
+  _scrambleFrame = 0;
+
+  function runWave() {
+    if (started) return;
+    _scrambleFrame++;
+
+    const allChars = [];
+    charElements.forEach((charRow) => {
+      charRow.forEach((charEl) => {
+        if (!charEl.classList.contains('correct') && !charEl.classList.contains('wrong')) {
+          const rect = charEl.getBoundingClientRect();
+          allChars.push({ charEl, x: rect.left });
+        }
+      });
+    });
+
+    if (allChars.length === 0) return;
+
+    const minX = Math.min(...allChars.map(c => c.x));
+    const maxX = Math.max(...allChars.map(c => c.x));
+    const xRange = Math.max(maxX - minX, 1);
+    const waveDuration = 1100;
+
+    allChars.forEach(({ charEl, x }) => {
+      if (Math.random() < 0.62) {
+        const waveDelay = ((x - minX) / xRange) * waveDuration;
+        const jitter = (Math.random() - 0.5) * 60;
+        _slotChar(charEl, _randChar(), Math.max(0, waveDelay + jitter));
+      }
+    });
+  }
+
+  runWave();
+  scrambleInterval = setInterval(runWave, 2200);
+}
+
+function stopScrambler() {
+  if (scrambleInterval) { clearInterval(scrambleInterval); scrambleInterval = null; }
+  // Restore real characters and reset inline styles so doc1 CSS takes over
+  charElements.forEach((charRow, wi) => {
+    const word = words[wi] || '';
+    charRow.forEach((charEl, ci) => {
+      if (!charEl.classList.contains('correct') && !charEl.classList.contains('wrong')) {
+        charEl.textContent = word[ci] || '';
+        charEl.style.opacity = '';
+        charEl.style.color   = '';
+        charEl.classList.remove('scrambling');
+      }
+    });
+  });
+}
+
 function renderWords() {
   while (wordsDisplay.firstChild) wordsDisplay.removeChild(wordsDisplay.firstChild);
 
   wordsInner = document.createElement('div');
   wordsInner.id = 'words-inner';
   wordsDisplay.appendChild(wordsInner);
-  wordsInner.appendChild(cursorBeam);  // cursor lives inside wordsInner
+  wordsInner.appendChild(cursorBeam);
 
   wordElements = []; charElements = [];
-  words.forEach(word => {
+  words.forEach((word, wi) => {
     const wordEl = document.createElement('span');
     wordEl.className = 'word';
     const charEls = [];
-    word.split('').forEach(ch => {
+    word.split('').forEach((ch, ci) => {
       const charEl = document.createElement('span');
-      charEl.className = 'char';
-      charEl.textContent = ch;
+      charEl.className = 'char scrambling';
+      // Start as a random char — scrambler takes over immediately
+      charEl.textContent = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+      // Use doc1's original resting opacity/color
+      charEl.style.opacity = '0.75';
+      charEl.style.color   = 'rgba(175,175,175,0.55)';
       wordEl.appendChild(charEl);
       charEls.push(charEl);
     });
@@ -1637,10 +1624,8 @@ function autoScrollToWord(index) {
   const wordEl = wordElements[index];
   const containerRect = wordsDisplay.getBoundingClientRect();
   const wordRect = wordEl.getBoundingClientRect();
-  // current translateY
   const currentY = parseFloat(wordsInner.style.transform.replace('translateY(','').replace(')','').replace('px','') || 0);
   const wordTop = wordRect.top - containerRect.top - currentY;
-  // keep current word in top third of visible area
   const targetY = wordTop - containerRect.height * 0.18;
   if (targetY > 0) {
     wordsInner.style.transform = `translateY(-${targetY}px)`;
@@ -1684,24 +1669,20 @@ function moveCursor() {
 }
 
 function animateCountUp(el, target, duration, suffix = '') {
-  // Animate digits falling/rolling one by one
   const str = String(target) + suffix;
   el.textContent = '';
   el.style.display = 'inline-block';
 
-  // Create a span per character, each drops in sequentially
   str.split('').forEach((ch, i) => {
     const span = document.createElement('span');
     span.className = 'digit-drop';
     span.style.animationDelay = (i * 110) + 'ms';
-    // For numeric digits, do a roll-up count effect
     if (/\d/.test(ch)) {
       const digitVal = parseInt(ch);
-      // Start from a higher digit and tick down to real value
       span.dataset.target = ch;
-      span.textContent = String((digitVal + 7) % 10); // start offset
+      span.textContent = String((digitVal + 7) % 10);
       let ticks = 0;
-      const totalTicks = 7 + digitVal; // land on correct digit
+      const totalTicks = 7 + digitVal;
       const tickInterval = Math.max(30, (duration * 0.55) / totalTicks);
       setTimeout(() => {
         const iv = setInterval(() => {
@@ -1745,7 +1726,6 @@ function showInlineResults() {
   `;
   statsPanel.classList.replace('during-test', 'show-results');
 
-  // Staggered digit-drop reveals
   setTimeout(() => animateCountUp(document.querySelector('.result-wpm'),   wpm,        900),       80);
   setTimeout(() => animateCountUp(document.querySelector('.result-acc'),   acc,        900, '%'),  280);
   setTimeout(() => animateCountUp(document.querySelector('.result-chars'), totalTyped, 700),       480);
@@ -1766,24 +1746,20 @@ function restoreStatsPanel() {
     statsPanel.classList.replace('show-results', 'during-test');
 }
 
-// ── CIRCULAR ARC COUNTDOWN RENDERER ────────────────────────────────────────
-// r=30 → circumference = 2π×30 ≈ 188.5
 const ARC_R = 30;
 const ARC_C = 2 * Math.PI * ARC_R;
-let _arcTotal = 30; // set to selectedTime on init
+let _arcTotal = 30;
 
 function renderArcTimer(container, seconds) {
   const fraction = Math.max(0, seconds / _arcTotal);
-  const offset   = ARC_C * (1 - fraction); // how much of the arc is "consumed"
+  const offset   = ARC_C * (1 - fraction);
   const label    = seconds >= 60
     ? Math.floor(seconds/60) + ':' + String(seconds%60).padStart(2,'0')
     : String(seconds);
 
-  // Re-use existing SVG if present, just update values — avoids re-creating DOM
   let prog = container.querySelector('.arc-progress');
   let num  = container.querySelector('.arc-number');
   if (!prog) {
-    // First render — build structure
     container.innerHTML = `
       <svg class="arc-svg" viewBox="0 0 72 72">
         <circle class="arc-track"    cx="36" cy="36" r="${ARC_R}"/>
@@ -1795,16 +1771,11 @@ function renderArcTimer(container, seconds) {
   } else {
     prog.setAttribute('stroke-dashoffset', offset);
     num.textContent = label;
-    // Tick flash
-    prog.classList.remove('ticked');
-    void prog.offsetWidth;
-    prog.classList.add('ticked');
   }
 }
 
 function initArcTimer(container, total) {
   _arcTotal = total;
-  // Build fresh
   container.innerHTML = '';
   renderArcTimer(container, total);
 }
@@ -1812,21 +1783,19 @@ function initArcTimer(container, total) {
 function startTyping() {
   if (started) return;
   started = true;
+  stopScrambler();
   stopChallengeRotation();
   clickPrompt.classList.add('hidden');
   wordsDisplay.classList.add('active-typing');
   document.getElementById('words-area').classList.add('typing-glow');
   mainCard.classList.add('focused');
 
-  // Show first live quote immediately
   setQuoteText("Let's go - show what you've got.");
   lastQuoteUpdate = Date.now();
 
   timerBar.style.transition = 'none';
   timerBar.style.transform  = 'scaleX(1)';
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    timerBar.classList.add('running');
-    timerBarWrap.classList.add('running');
     timerBar.style.transition = `transform ${selectedTime}s linear`;
     timerBar.style.transform  = 'scaleX(0)';
   }));
@@ -1848,8 +1817,6 @@ function endTest() {
   finished = true;
   hiddenInput.blur();
   cursorBeam.style.display = 'none';
-  timerBar.classList.remove('running');
-  timerBarWrap.classList.remove('running');
   mainCard.classList.remove('focused');
   wordsDisplay.classList.remove('active-typing');
   document.getElementById('words-area').classList.remove('typing-glow');
@@ -1869,8 +1836,7 @@ function commitWord(typedInput) {
   }
   if (typed !== currentWord) {
     const wEl = wordElements[currentWordIndex];
-    wEl.classList.add('shake');
-    setTimeout(() => wEl.classList.remove('shake'), 300);
+
   }
   currentWordIndex++; currentCharIndex = 0; hiddenInput.value = '';
   if (typed === words[currentWordIndex - 1]) {
@@ -1883,7 +1849,7 @@ function commitWord(typedInput) {
   }
   if (currentWordIndex >= words.length) { endTest(); return; }
   autoScrollToWord(currentWordIndex);
-  updateLiveQuote(true); // force quote update on each word commit
+  updateLiveQuote(true);
 }
 
 hiddenInput.addEventListener('input', () => {
@@ -1892,7 +1858,6 @@ hiddenInput.addEventListener('input', () => {
   const currentWord = words[currentWordIndex];
 
   if (inputVal.endsWith(' ')) {
-    // Do not skip if nothing typed yet (space at start of word)
     if (inputVal.trim() === '') { hiddenInput.value = ''; return; }
     commitWord(inputVal);
   } else {
@@ -1918,20 +1883,19 @@ hiddenInput.addEventListener('keydown', e => {
   if (e.key === 'Backspace' && hiddenInput.value === '') e.preventDefault();
 });
 
-
+// ── KEY TO START: first keypress starts the test but does NOT type into the box ──
 document.addEventListener('keydown', e => {
-  // Tab = restart always
   if (e.key === 'Tab') { e.preventDefault(); generateWords(); resetTest(); return; }
 
-  // If not started and key is a printable character, focus input and start
-  if (!started && !finished && e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-    hiddenInput.focus();
-    startTyping();
-    // Let the keypress fall through to the input naturally
+  if (!started && !finished) {
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      hiddenInput.focus();
+      startTyping();
+    }
   }
 });
 
-// Click on words area also focuses (but doesn't start until key)
 document.getElementById('words-area').addEventListener('click', () => {
   if (!finished) { hiddenInput.focus(); }
 });
@@ -1943,6 +1907,7 @@ hiddenInput.addEventListener('blur', () => {
 function resetTest() {
   clearInterval(timer);
   stopChallengeRotation();
+  stopScrambler();
   if (typewriterTimer) { clearTimeout(typewriterTimer); typewriterTimer = null; }
   started = finished = false;
   currentWordIndex = currentCharIndex = 0;
@@ -1950,8 +1915,6 @@ function resetTest() {
   lastQuoteUpdate = 0; lastTier = ''; lastLiveIdx = -1;
   timeLeft = selectedTime;
 
-  timerBar.classList.remove('running');
-  timerBarWrap.classList.remove('running');
   timerBar.style.transition = 'none';
   timerBar.style.transform  = 'scaleX(1)';
   hiddenInput.value = '';
@@ -1963,19 +1926,18 @@ function resetTest() {
   if (wordsInner) wordsInner.style.transform = 'translateY(0)';
 
   restoreStatsPanel();
-  // Render the initial time as 7-segment display
   requestAnimationFrame(() => {
     const td = document.getElementById('time-display');
     if (td) initArcTimer(td, selectedTime);
   });
   renderWords();
-  startChallengeRotation();   // restart aggressive quote rotation
+  startScrambler();
+  startChallengeRotation();
   requestAnimationFrame(moveCursor);
   requestAnimationFrame(() => positionPill(document.querySelector('.duration-option.active')));
   requestAnimationFrame(() => positionModePill(document.querySelector('.mode-option.active')));
 }
 
-// Button ripple
 document.querySelectorAll('.btn, .duration-option, .mode-option').forEach(btn => {
   btn.style.position = 'relative';
   btn.style.overflow = 'hidden';
@@ -1990,7 +1952,6 @@ document.querySelectorAll('.btn, .duration-option, .mode-option').forEach(btn =>
   });
 });
 
-// Float +word particle on correct word commit
 function spawnFloatParticle(wordEl) {
   const r = wordEl.getBoundingClientRect();
   const ref = wordsInner || wordsDisplay;
@@ -2011,7 +1972,6 @@ document.getElementById('restart-btn').addEventListener('click', (e) => {
   btn.classList.add('firing');
   setTimeout(() => btn.classList.remove('firing'), 580);
 
-  // Spawn spark particles from button center
   const rect = btn.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
@@ -2034,7 +1994,6 @@ document.getElementById('restart-btn').addEventListener('click', (e) => {
   generateWords(); resetTest();
 });
 
-// ── Duration pill track ──
 function positionPill(activeBtn) {
   const pill  = document.getElementById('duration-pill');
   const track = document.getElementById('duration-track');
@@ -2056,7 +2015,6 @@ document.querySelectorAll('.duration-option').forEach(btn => {
   });
 });
 
-// Init pill position after layout
 requestAnimationFrame(() => {
   positionPill(document.querySelector('.duration-option.active'));
 });
@@ -2066,7 +2024,6 @@ window.addEventListener('resize', () => {
 
 window.addEventListener('resize', moveCursor);
 
-// ── Mode selector ──
 function positionModePill(activeBtn) {
   const pill  = document.getElementById('mode-pill');
   const track = document.getElementById('mode-track');
@@ -2111,7 +2068,6 @@ resetTest();
   resize();
   window.addEventListener('resize', resize);
 
-  // ── Floating orbs ──
   const ORB_COUNT = 6;
   const orbs = Array.from({ length: ORB_COUNT }, (_, i) => ({
     x: Math.random() * W,
@@ -2124,7 +2080,6 @@ resetTest();
     speed: 0.0008 + Math.random() * 0.001,
   }));
 
-  // ── Shooting particles ──
   const PARTICLE_COUNT = 55;
   const particles = Array.from({ length: PARTICLE_COUNT }, () => makeParticle());
 
@@ -2136,12 +2091,11 @@ resetTest();
       vx: (Math.random() - 0.5) * 0.5,
       vy: -0.15 - Math.random() * 0.45,
       opacity: 0.08 + Math.random() * 0.22,
-      life: Math.random(),         // 0–1, respawns at 0
+      life: Math.random(),
       decay: 0.0015 + Math.random() * 0.003,
     };
   }
 
-  // ── Pulse rings ──
   const rings = [];
   function spawnRing() {
     rings.push({
@@ -2156,8 +2110,6 @@ resetTest();
   setInterval(spawnRing, 2200);
   spawnRing();
 
-  // ── Constellation lines ──
-  // Connect nearby particles with faint lines
   function drawConstellation() {
     const maxDist = 90;
     for (let i = 0; i < particles.length; i++) {
@@ -2178,7 +2130,6 @@ resetTest();
     }
   }
 
-  // ── Golden Sparkles / Sprinkles ──
   const SPARKLE_COUNT = 70;
 
   function makeStar() {
@@ -2186,18 +2137,18 @@ resetTest();
       x:       Math.random() * (W || window.innerWidth),
       y:       Math.random() * (H || window.innerHeight),
       size:    0.8 + Math.random() * 2.2,
-      points:  Math.random() < 0.5 ? 4 : 6,   // 4-point diamond or 6-point star
+      points:  Math.random() < 0.5 ? 4 : 6,
       rot:     Math.random() * Math.PI * 2,
       rotSpeed:(Math.random() - 0.5) * 0.04,
       vx:      (Math.random() - 0.5) * 0.3,
       vy:      -0.08 - Math.random() * 0.25,
       opacity: 0,
-      maxOp:   0.35 + Math.random() * 0.5,
+      maxOp:   0.18 + Math.random() * 0.22,
       phase:   Math.random() * Math.PI * 2,
       twinkleSpeed: 0.025 + Math.random() * 0.04,
       born:    0,
       lifespan: 180 + Math.random() * 300,
-      age:     Math.floor(Math.random() * 300), // stagger start
+      age:     Math.floor(Math.random() * 300),
     };
   }
 
@@ -2222,7 +2173,6 @@ resetTest();
       s.y   += s.vy;
       s.phase += s.twinkleSpeed;
 
-      // fade in → twinkle → fade out
       const halfLife = s.lifespan * 0.5;
       if (s.age < halfLife * 0.3) {
         s.opacity = s.maxOp * (s.age / (halfLife * 0.3));
@@ -2242,26 +2192,23 @@ resetTest();
       const a = Math.max(0, s.opacity);
       if (a < 0.005) return;
 
-      // Draw sparkle star shape
       const outer = s.size;
       const inner = s.size * 0.38;
       drawStar(s.x, s.y, s.points, outer, inner, s.rot);
 
-      // Gold gradient fill
-      const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, outer * 1.5);
+      const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, outer * 1.2);
       grad.addColorStop(0,   `rgba(255,248,214,${a})`);
-      grad.addColorStop(0.5, `rgba(245,197,66,${a * 0.8})`);
+      grad.addColorStop(0.5, `rgba(245,197,66,${a * 0.55})`);
       grad.addColorStop(1,   `rgba(245,197,66,0)`);
       ctx.fillStyle = grad;
       ctx.fill();
 
-      // Cross-hair shine lines on larger sparkles
       if (s.size > 1.6) {
         ctx.save();
-        ctx.globalAlpha = a * 0.6;
-        ctx.strokeStyle = `rgba(255,248,214,${a})`;
-        ctx.lineWidth = 0.5;
-        const arm = s.size * 2.5;
+        ctx.globalAlpha = a * 0.35;
+        ctx.strokeStyle = `rgba(255,248,214,${a * 0.7})`;
+        ctx.lineWidth = 0.4;
+        const arm = s.size * 2.0;
         ctx.beginPath();
         ctx.moveTo(s.x - arm, s.y); ctx.lineTo(s.x + arm, s.y);
         ctx.moveTo(s.x, s.y - arm); ctx.lineTo(s.x, s.y + arm);
@@ -2274,7 +2221,6 @@ resetTest();
   function draw() {
     ctx.clearRect(0, 0, W, H);
 
-    // Orbs
     orbs.forEach(o => {
       o.phase += o.speed;
       const pulse = Math.sin(o.phase) * 0.012;
@@ -2294,10 +2240,8 @@ resetTest();
       ctx.fill();
     });
 
-    // Constellation lines
     drawConstellation();
 
-    // Particles
     particles.forEach((p, idx) => {
       p.x += p.vx;
       p.y += p.vy;
@@ -2314,10 +2258,8 @@ resetTest();
       ctx.fill();
     });
 
-    // Golden sparkles
     drawSparkles();
 
-    // Pulse rings
     for (let i = rings.length - 1; i >= 0; i--) {
       const ring = rings[i];
       ring.r += ring.speed;
