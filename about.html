@@ -1,19 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="style.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ia2ciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZkOTY2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2Y1YzU0MiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMWExYTFhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBhMGEwYSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPCEtLSBEYXJrIHJvdW5kZWQgc3F1YXJlIGJhY2tncm91bmQgLS0+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIEdvbGQgYm9yZGVyIC0tPgogIDxyZWN0IHg9IjEuNSIgeT0iMS41IiB3aWR0aD0iMjkiIGhlaWdodD0iMjkiIHJ4PSI2IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgja2cpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC44Ii8+CiAgPCEtLSBMaWdodG5pbmcgYm9sdCBzaGFwZSAoa2V5Ym9hcmQgc3RyaWtlKSAtLT4KICA8cGF0aCBkPSJNMTkgMyBMMTEgMTUgTDE2IDE1IEwxMyAyOSBMMjEgMTcgTDE2IDE3IFoiIGZpbGw9InVybCgja2cpIi8+CiAgPCEtLSBTbWFsbCBkb3QgYWNjZW50IGJvdHRvbS1yaWdodCAtLT4KICA8Y2lyY2xlIGN4PSIyNiIgY3k9IjI2IiByPSIyIiBmaWxsPSIjZjVjNTQyIiBvcGFjaXR5PSIwLjYiLz4KPC9zdmc+">
   <title>About Us - STROKE TEST</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0d00;
+      --surface: #141400;
+      --border: #2a2a10;
+      --text: #888870;
+      --text-dim: #444430;
+      --text-bright: #bbbb90;
+      --accent: #e8c400;
+      --white: #f0eecc;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      min-height: 100vh;
+      background-image: radial-gradient(ellipse 70% 60% at 50% 30%, #1a1a00 0%, #0d0d00 100%);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px);
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.04em;
+    }
+    .logo strong { color: var(--accent); }
+    .logo span   { color: var(--text); }
+
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+    .wrapper { max-width: 1100px; margin: 0 auto; padding: 72px 48px 80px; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: end;
+      margin-bottom: 72px;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .hero-left h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 10vw, 8rem);
+      line-height: 0.88;
+      letter-spacing: 0.02em;
+      color: var(--white);
+    }
+    .hero-left h1 em { color: var(--accent); font-style: normal; }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--accent);
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      margin-bottom: 20px;
+    }
+
+    .hero-right p {
+      font-size: 0.85rem;
+      line-height: 1.9;
+      color: var(--text-bright);
+      border-left: 2px solid var(--accent);
+      padding-left: 20px;
+    }
+
+    .sep {
+      width: 100%; height: 1px;
+      background: var(--border);
+      margin: 0 0 72px;
+      position: relative;
+    }
+    .sep::after {
+      content: '//';
+      position: absolute;
+      left: 0; top: -10px;
+      font-size: 0.65rem;
+      color: var(--accent);
+      background: var(--bg);
+      padding-right: 12px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 1px;
+      animation: fadeUp 0.5s 0.15s ease both;
+    }
+
+    .card {
+      background: var(--bg);
+      padding: 36px 32px;
+      position: relative;
+      transition: background 0.25s;
+    }
+    .card:hover { background: var(--surface); }
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+      transform-origin: left;
+    }
+    .card:hover::after { transform: scaleX(1); }
+
+    .card-num { font-size: 0.6rem; color: var(--accent); letter-spacing: 0.25em; margin-bottom: 20px; opacity: 0.6; }
+    .card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; color: var(--white); letter-spacing: 0.04em; margin-bottom: 14px; }
+    .card p { font-size: 0.78rem; line-height: 1.85; color: var(--text); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 56px;
+      animation: fadeUp 0.5s 0.25s ease both;
+    }
+
+    .stat { background: var(--bg); padding: 32px 24px; text-align: center; transition: background 0.25s; }
+    .stat:hover { background: var(--surface); }
+    .stat-val { display: block; font-family: 'Bebas Neue', sans-serif; font-size: 3.2rem; color: var(--accent); line-height: 1; }
+    .stat-label { display: block; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--text-dim); text-transform: uppercase; margin-top: 8px; }
+
+    .contact {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 40px;
+      border: 1px solid var(--border);
+      padding: 40px 44px;
+      background: var(--surface);
+      animation: fadeUp 0.5s 0.35s ease both;
+    }
+    .contact h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--white); letter-spacing: 0.05em; margin-bottom: 6px; }
+    .contact p { font-size: 0.75rem; color: var(--text-dim); }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent);
+      color: #000;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 16px 28px;
+      white-space: nowrap;
+      transition: background 0.2s, gap 0.2s;
+    }
+    .cta:hover { background: #fff200; gap: 16px; }
+    .cta::after { content: '→'; }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 48px;
+      border-top: 1px solid var(--border);
+      margin-top: 72px;
+      animation: fadeUp 0.5s 0.45s ease both;
+    }
+    footer span { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 0.1em; }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid var(--accent);
+      padding: 10px 22px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .back-btn:hover { background: var(--accent); color: #000; }
+    .back-btn::before { content: '←'; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      nav, footer { padding: 20px 24px; }
+      .wrapper { padding: 48px 24px 60px; }
+      .hero { grid-template-columns: 1fr; gap: 32px; }
+      .cards { grid-template-columns: 1fr; }
+      .contact { grid-template-columns: 1fr; gap: 24px; }
+    }
+  </style>
 </head>
 <body>
+
+  <nav>
+    <div class="logo"><strong>STROKE</strong><span>TEST</span></div>
+    <ul class="nav-links">
+      <li><a href="index.html">Test</a></li>
+      <li><a href="about.html" class="active">About Us</a></li>
+    </ul>
+  </nav>
+
   <div class="wrapper">
-    <header>
-      <h1>About STROKE TEST</h1>
-    </header>
-    <p style="font-family:'IBM Plex Mono',monospace; font-size:1rem; color:var(--text);">This typing speed test was created by Muhammad Arqam Ghayour. It's a free, no-signup tool designed to help you measure your WPM and accuracy with a clean interface.</p>
-    <p style="font-family:'IBM Plex Mono',monospace; font-size:1rem; color:var(--text);">Feel free to <a href="index.html" style="color:var(--accent);">return to the test</a> at any time.</p>
+
+    <section class="hero">
+      <div class="hero-left">
+        <div class="hero-tag">// about us</div>
+        <h1>WHAT IS<br><em>STROKE</em><br>TEST?</h1>
+      </div>
+      <div class="hero-right">
+        <p>A typing speed test engineered for those who take their craft seriously. Measure your words per minute and accuracy with a distraction-free interface built around real language — not random gibberish.</p>
+      </div>
+    </section>
+
+    <div class="sep"></div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-num">01 // THE PROBLEM</div>
+        <h2>Broken Tools</h2>
+        <p>Most typing speed tools on the internet suffer from illogical sentence pools, cluttered UIs, or both. They get in your way instead of helping you improve.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">02 // THE SOLUTION</div>
+        <h2>Built Different</h2>
+        <p>Stroke Test was built from scratch to fix this. A premium, focused interface paired with a curated library of grammatically perfect, meaningful sentences.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">03 // THE GOAL</div>
+        <h2>Pure Focus</h2>
+        <p>Nothing between you and your score. Every design decision was made to keep you in the zone — so you can see exactly how fast your fingers fly.</p>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-val">WPM</span>
+        <span class="stat-label">Live Tracking</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">100%</span>
+        <span class="stat-label">Real Sentences</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">4x</span>
+        <span class="stat-label">Duration Modes</span>
+      </div>
+    </div>
+
+    <div class="contact">
+      <div>
+        <h2>Your Feedback Matters</h2>
+        <p>Found a bug? Have a suggestion? We'd love to hear from you.</p>
+      </div>
+      <a class="cta" href="mailto:arqamgh4@gmail.com">arqamgh4@gmail.com</a>
+    </div>
+
   </div>
+
+  <footer>
+    <span>MADE BY ARQAM WITH ♥</span>
+    <a class="back-btn" href="index.html">Back to Test</a>
+  </footer>
+
 </body>
 </html>
