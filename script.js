@@ -126,7 +126,7 @@ const SENTENCE_POOL_CAPS = [
   "The market was loud, colorful, and impossible to navigate on a Saturday.",
   "He practiced for hours, and by evening, he finally got it right.",
   "Clouds gathered quickly, and the air turned cold before noon.",
-  "The café was warm, dimly lit, and always smelled of fresh coffee.",
+  "The caf� was warm, dimly lit, and always smelled of fresh coffee.",
   "She packed her bag the night before, then repacked it twice more.",
   "The road curved sharply, then widened into a long, flat stretch.",
   "He read the instructions carefully, paused, and started from the beginning.",
@@ -183,7 +183,7 @@ const SENTENCE_POOL_PUNCT = [
   "\"Trust the process,\" she said, but the process had failed them twice before.",
   "The sign above the door read: \"Enter at your own risk / Exit freely.\"",
   "He asked one question: \"Why?\" She thought about it for the rest of her life.",
-  "The old saying goes: \"Measure twice, cut once\" — advice he always ignored.",
+  "The old saying goes: \"Measure twice, cut once\" � advice he always ignored.",
   "She left a voicemail that said: \"Call me back. It's not urgent; it is, though.\"",
   "The choices narrowed to two: stay and fight, or leave and never explain.",
   "\"You were right,\" he finally admitted; it took him three years to say it.",
@@ -191,7 +191,7 @@ const SENTENCE_POOL_PUNCT = [
   "She smiled and said, \"Of course,\" but her eyes were asking a different question.",
   "The error log showed one warning: \"Unexpected input; process terminated.\"",
   "Why rush? The deadline passed; the damage was done; the lesson was free.",
-  "He underlined two words: \"never again\" — then underlined them a second time.",
+  "He underlined two words: \"never again\" � then underlined them a second time.",
   "The instruction manual read: \"If this fails, try again; if it fails twice, call us.\"",
   "\"I'll be five minutes,\" she said; forty-five minutes later, she reappeared.",
   "The report concluded: \"Insufficient data; further study is strongly recommended.\"",
@@ -227,13 +227,13 @@ function buildWordList(target) {
 }
 
 const CHALLENGE_QUOTES = [
-  "no cap, your WPM is about to go crazy 🔥",
+  "no cap, your WPM is about to go crazy ??",
   "bestie, the keyboard said choose violence",
   "it's giving speed. it's giving accuracy. slay.",
   "POV: you actually cooked this time fr fr",
   "main character energy only. type like you mean it.",
   "the rizz is irrelevant. fingers on keys. now.",
-  "not me manifesting your highest WPM yet 💅",
+  "not me manifesting your highest WPM yet ??",
   "okay but what if you just... didn't miss a single key",
   "touch grass later. touch keys now.",
   "lowkey obsessed with how fast you're about to go",
@@ -241,71 +241,71 @@ const CHALLENGE_QUOTES = [
   "the delulu is the solulu. believe you're fast. be fast.",
   "serving keyboard supremacy and we love to see it",
   "ate and left no crumbs. that's the goal.",
-  "it's giving Olympic-level typing and I'm here for it ✨",
+  "it's giving Olympic-level typing and I'm here for it ?",
 ];
 
 const LIVE_QUOTES = {
   slowPoor: [
-    "bestie... are you okay? 💀",
+    "bestie... are you okay? ??",
     "this ain't it and we both know it fr",
     "no cap that was tragic. try again bestie.",
-    "the keyboard is not the problem just saying 😭",
+    "the keyboard is not the problem just saying ??",
     "touch typing could never be your villain origin story",
   ],
   slowOkay: [
     "it's giving... effort. we respect the grind.",
-    "lowkey warming up or lowkey napping? 👀",
+    "lowkey warming up or lowkey napping? ??",
     "the slow and steady arc but like... speedrun it?",
     "y'all this is giving main character who just woke up",
     "not bad not good. solidly mid-tier era fr.",
   ],
   mediumPoor: [
     "fast fingers, chaotic energy. very unhinged bestie.",
-    "the speed is there but accuracy said nah 💀",
+    "the speed is there but accuracy said nah ??",
     "going full send but the keyboard said no lmao",
     "girlboss speed, girlboss typos. it evens out ig.",
     "speedrunning errors is not the move fr fr",
   ],
   mediumOkay: [
-    "okay not terrible, not elite, very much mid 💅",
+    "okay not terrible, not elite, very much mid ??",
     "this is giving 9-to-5 office keyboard warrior era",
     "you're literally one energy drink away from cooking",
     "the potential is there and we see it bestie",
     "solidly fine. but fine is not the vibe we're after.",
   ],
   mediumGood: [
-    "okay wait you're actually built different rn ✨",
+    "okay wait you're actually built different rn ?",
     "no cap this is lowkey impressive fr",
     "the glow-up is REAL and I'm obsessed",
     "slay behavior detected. continue this arc.",
-    "certified keyboard menace and we love to see it 🔥",
+    "certified keyboard menace and we love to see it ??",
   ],
   fastPoor: [
-    "fast as hell but the accuracy said not today 💀",
+    "fast as hell but the accuracy said not today ??",
     "fingers on espresso, brain on chamomile lmao",
     "bro said speed run and forgot accuracy existed",
     "chaotic fast energy but we need accuracy to slay",
     "unhinged speed. truly a disaster but make it fashion.",
   ],
   fastGood: [
-    "bestie you're actually cooking and I'm shook 😭🔥",
+    "bestie you're actually cooking and I'm shook ????",
     "the words are literally scared of you rn",
     "no cap this is elite behavior fr fr",
     "ChatGPT is nervous and rightfully so bestie",
-    "you just unlocked main character typing arc ✨",
+    "you just unlocked main character typing arc ?",
   ],
   veryFastGood: [
-    "are you human? be so fr with me rn 👀",
+    "are you human? be so fr with me rn ??",
     "this is illegal in multiple countries no cap",
-    "the FBI just opened a tab on you bestie 💀",
+    "the FBI just opened a tab on you bestie ??",
     "you type like rent is due in 5 minutes fr",
-    "not the keyboard going absolutely feral rn 🔥🔥",
+    "not the keyboard going absolutely feral rn ????",
   ],
   perfect: [
-    "zero typos zero chill absolute unhinged behavior 💅",
+    "zero typos zero chill absolute unhinged behavior ??",
     "perfect accuracy?? bestie you are NOT normal",
     "ate. left no crumbs. not a single one. slay.",
-    "this is giving god-tier and I am not okay 😭✨",
+    "this is giving god-tier and I am not okay ???",
     "the keyboard just submitted to you and honestly valid",
   ],
 };
@@ -416,6 +416,7 @@ let started = false, finished = false;
 let currentWordIndex = 0, currentCharIndex = 0;
 let totalTyped = 0, totalErrors = 0, correctChars = 0;
 let words = [], wordElements = [], charElements = [];
+let performanceHistory = [];
 
 const wordsDisplay = document.getElementById('words-display');
 const hiddenInput  = document.getElementById('hidden-input');
@@ -430,7 +431,7 @@ function generateWords(count = 100) { words = buildWordList(count); }
 
 let wordsInner = null;
 
-// ── PRE-GAME CHAR SCRAMBLER ─────────────────────────────────────────────────
+// -- PRE-GAME CHAR SCRAMBLER -------------------------------------------------
 const SCRAMBLE_CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%*?/';
 let scrambleInterval = null;
 let _scrambleFrame   = 0;
@@ -567,7 +568,7 @@ function renderWords() {
     word.split('').forEach((ch, ci) => {
       const charEl = document.createElement('span');
       charEl.className = 'char scrambling';
-      // Start as a random char — scrambler takes over immediately
+      // Start as a random char � scrambler takes over immediately
       charEl.textContent = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
       // Use doc1's original resting opacity/color
       charEl.style.opacity = '0.75';
@@ -608,21 +609,37 @@ function moveCursor() {
   const ref = wordsInner || wordsDisplay;
   const cRect = ref.getBoundingClientRect();
   let left, top, height;
+  
+  // Ensure we have valid word and character elements
+  if (!charElements[currentWordIndex] || charElements[currentWordIndex].length === 0) {
+    cursorBeam.style.display = 'none';
+    return;
+  }
+  
   if (currentCharIndex === 0) {
-    const first = charElements[currentWordIndex]?.[0];
-    if (!first) return;
+    const first = charElements[currentWordIndex][0];
+    if (!first || !first.parentElement) {
+      cursorBeam.style.display = 'none';
+      return;
+    }
     const r = first.getBoundingClientRect();
     left = r.left - cRect.left - 2;
     top  = r.top  - cRect.top  + r.height * 0.1;
     height = r.height * 0.78;
   } else {
-    const prev = charElements[currentWordIndex]?.[Math.min(currentCharIndex-1, words[currentWordIndex].length-1)];
-    if (!prev) return;
+    const charIdx = Math.min(currentCharIndex - 1, charElements[currentWordIndex].length - 1);
+    const prev = charElements[currentWordIndex][charIdx];
+    if (!prev || !prev.parentElement) {
+      cursorBeam.style.display = 'none';
+      return;
+    }
     const r = prev.getBoundingClientRect();
     left = r.right - cRect.left;
     top  = r.top   - cRect.top  + r.height * 0.1;
     height = r.height * 0.78;
   }
+  
+  // Ensure cursor is visible
   cursorBeam.style.display = 'block';
   cursorBeam.style.left   = left + 'px';
   cursorBeam.style.top    = top  + 'px';
@@ -762,6 +779,7 @@ function startTyping() {
     timerBar.style.transform  = 'scaleX(0)';
   }));
 
+  performanceHistory = [];
   timer = setInterval(() => {
     timeLeft--;
     const td = document.getElementById('time-display');
@@ -770,6 +788,15 @@ function startTyping() {
       if (timeLeft <= 10) td.classList.add('urgent');
       else td.classList.remove('urgent');
     }
+    
+    // Track performance every second
+    if (totalTyped > 0) {
+      const elapsed = Math.max(selectedTime - timeLeft, 1);
+      const wpm = Math.round((correctChars / 5) / (elapsed / 60));
+      const acc = totalTyped > 0 ? Math.round((correctChars / totalTyped) * 100) : 100;
+      performanceHistory.push({ wpm: Math.max(0, wpm), acc: Math.min(100, acc) });
+    }
+    
     updateLiveQuote();
     if (timeLeft <= 0) { clearInterval(timer); endTest(); }
   }, 1000);
@@ -782,7 +809,28 @@ function endTest() {
   mainCard.classList.remove('focused');
   wordsDisplay.classList.remove('active-typing');
   document.getElementById('words-area').classList.remove('typing-glow');
-  showInlineResults();
+  
+  // Calculate final results
+  const wpm = Math.round((correctChars / 5) / (selectedTime / 60));
+  const acc = totalTyped > 0 ? Math.round((correctChars / totalTyped) * 100) : 0;
+  
+  // Save results to localStorage
+  const testResults = {
+    wpm: wpm,
+    acc: acc,
+    totalTyped: totalTyped,
+    totalErrors: totalErrors,
+    correctChars: correctChars,
+    selectedTime: selectedTime,
+    selectedMode: selectedMode,
+    timestamp: new Date().toISOString(),
+    performanceData: performanceHistory
+  };
+  
+  localStorage.setItem('testResults', JSON.stringify(testResults));
+  
+  // Redirect immediately to report page without showing results on index
+  window.location.href = 'report.html';
 }
 
 function commitWord(typedInput) {
@@ -850,7 +898,7 @@ hiddenInput.addEventListener('keydown', e => {
   if (e.key === 'Backspace' && hiddenInput.value === '') e.preventDefault();
 });
 
-// ── KEY TO START: first keypress starts the test but does NOT type into the box ──
+// -- KEY TO START: first keypress starts the test but does NOT type into the box --
 document.addEventListener('keydown', e => {
   if (e.key === 'Tab') { e.preventDefault(); generateWords(); resetTest(); return; }
 
@@ -879,6 +927,7 @@ function resetTest() {
   started = finished = false;
   currentWordIndex = currentCharIndex = 0;
   totalTyped = totalErrors = correctChars = 0;
+  performanceHistory = [];
   lastQuoteUpdate = 0; lastTier = ''; lastLiveIdx = -1;
   timeLeft = selectedTime;
 
@@ -1022,7 +1071,7 @@ window.addEventListener('resize', () => {
 generateWords();
 resetTest();
 
-// ─── BACKGROUND CANVAS ANIMATION ───────────────────────────────────────────
+// --- BACKGROUND CANVAS ANIMATION -------------------------------------------
 (function() {
   const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d');
