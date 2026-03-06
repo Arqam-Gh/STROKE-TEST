@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ia2ciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZkOTY2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2Y1YzU0MiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMWExYTFhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBhMGEwYSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPCEtLSBEYXJrIHJvdW5kZWQgc3F1YXJlIGJhY2tncm91bmQgLS0+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIEdvbGQgYm9yZGVyIC0tPgogIDxyZWN0IHg9IjEuNSIgeT0iMS41IiB3aWR0aD0iMjkiIGhlaWdodD0iMjkiIHJ4PSI2IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgja2cpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC44Ii8+CiAgPCEtLSBMaWdodG5pbmcgYm9sdCBzaGFwZSAoa2V5Ym9hcmQgc3RyaWtlKSAtLT4KICA8cGF0aCBkPSJNMTkgMyBMMTEgMTUgTDE2IDE1IEwxMyAyOSBMMjEgMTcgTDE2IDE3IFoiIGZpbGw9InVybCgja2cpIi8+CiAgPCEtLSBTbWFsbCBkb3QgYWNjZW50IGJvdHRvbS1yaWdodCAtLT4KICA8Y2lyY2xlIGN4PSIyNiIgY3k9IjI2IiByPSIyIiBmaWxsPSIjZjVjNTQyIiBvcGFjaXR5PSIwLjYiLz4KPC9zdmc+">
+    <title>STROKE TEST — Performance Report</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Bebas+Neue&display=swap&family=Playfair+Display:ital,wght@0,500;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <style>
+        body.report-page { overflow: auto; }
+        
+        .report-container { padding: 40px 20px; }
+        .report-header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: pageIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+        }
+        .report-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.8rem;
+            letter-spacing: 4px;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        .report-subtitle {
+            color: var(--muted2);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .main-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+            animation: cardIn 0.6s 0.15s cubic-bezier(0.22,1,0.36,1) both;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(245,197,66,0.05) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .stat-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(245,197,66,0.1);
+        }
+        .stat-card:hover::before { opacity: 1; }
+        
+        .stat-card-value {
+            display: block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        .stat-card-label {
+            font-size: 0.75rem;
+            color: var(--muted2);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+            animation: cardIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
+        }
+        .section-title {
+            font-size: 1.3rem;
+            color: var(--text);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            letter-spacing: 1px;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .detail-item {
+            background: transparent;
+            border: 1px solid var(--border);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .detail-item:hover {
+            border-color: var(--accent);
+            background: rgba(245,197,66,0.02);
+        }
+        
+        .detail-label {
+            font-size: 0.8rem;
+            color: var(--muted2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .detail-value {
+            font-size: 1.2rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+        
+        .chart-container {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-top: 2px solid var(--accent);
+            padding: 30px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(245,197,66,0.12), inset 0 1px 0 rgba(245,197,66,0.05);
+            transition: all 0.3s ease;
+        }
+        .chart-container:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 40px rgba(245,197,66,0.2), inset 0 1px 0 rgba(245,197,66,0.08);
+        }
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(245,197,66,0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .chart-wrapper {
+            position: relative;
+            height: 350px;
+            z-index: 1;
+        }
+        
+        .performance-bars {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* Side-by-side stats and graph layout */
+        .stats-graph-section {
+            display: grid;
+            grid-template-columns: 0.5fr 1.4fr;
+            gap: 30px;
+            margin-bottom: 40px;
+            animation: cardIn 0.6s 0.15s cubic-bezier(0.22,1,0.36,1) both;
+        }
+        
+        .stats-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .stat-item-large {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-left: 3px solid var(--accent);
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item-large:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 25px rgba(245,197,66,0.15);
+        }
+        
+        .stat-item-large::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(245,197,66,0.05) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .stat-item-large:hover::before { opacity: 1; }
+        
+        .stat-item-large-value {
+            display: block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        
+        .stat-item-large-label {
+            font-size: 0.8rem;
+            color: var(--muted2);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+        
+        .graph-column {
+            position: relative;
+        }
+        
+        .chart-container-side {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-top: 2px solid var(--accent);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(245,197,66,0.12), inset 0 1px 0 rgba(245,197,66,0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-container-side:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 40px rgba(245,197,66,0.2), inset 0 1px 0 rgba(245,197,66,0.08);
+        }
+        
+        .chart-container-side::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(245,197,66,0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        
+        .chart-title-side {
+            position: relative;
+            z-index: 2;
+            font-size: 0.95rem;
+            color: var(--muted2);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .chart-wrapper-side {
+            position: relative;
+            flex: 1;
+            min-height: 300px;
+            z-index: 1;
+        }
+        
+        .bar-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 30px;
+        }
+        .bar-label {
+            font-size: 0.9rem;
+            color: var(--text);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            border-radius: 4px;
+            transition: width 1s cubic-bezier(0.22,1,0.36,1);
+            width: 0%;
+        }
+        .progress-value {
+            font-size: 0.85rem;
+            color: var(--muted2);
+            text-align: right;
+        }
+        
+        .actions {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid var(--border);
+        }
+        .report-btn {
+            display: inline-block;
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 12px 40px;
+            font-size: 0.9rem;
+            font-family: 'IBM Plex Mono', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin: 0 10px;
+        }
+        .report-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+        }
+        
+        .performance-tier {
+            background: var(--surface);
+            border: 2px solid var(--accent);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .tier-title {
+            font-size: 1.1rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        .tier-message {
+            font-size: 1.3rem;
+            color: var(--text);
+            font-style: italic;
+        }
+
+        /* Tablet responsive (768px and below) */
+        @media (max-width: 768px) {
+            .wrapper.report-container {
+                padding: 24px 16px;
+            }
+            .report-header {
+                margin-bottom: 32px;
+            }
+            .report-title {
+                font-size: 2rem;
+                letter-spacing: 2px;
+            }
+            .main-stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+            .stat-card {
+                padding: 20px 16px;
+            }
+            .stat-card-value {
+                font-size: 2rem;
+            }
+            .performance-bars {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .details-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .chart-wrapper {
+                height: 300px;
+            }
+            .stats-graph-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .stat-item-large {
+                padding: 20px 16px;
+            }
+            .stat-item-large-value {
+                font-size: 2.2rem;
+            }
+            .chart-wrapper-side {
+                min-height: 250px;
+            }
+        }
+
+        /* Mobile responsive (480px and below) */
+        @media (max-width: 480px) {
+            .wrapper.report-container {
+                padding: 16px 12px;
+                max-width: 100%;
+            }
+            .report-header {
+                margin-bottom: 20px;
+            }
+            .report-title {
+                font-size: 1.6rem;
+                letter-spacing: 1px;
+            }
+            .report-subtitle {
+                font-size: 0.7rem;
+                letter-spacing: 1px;
+            }
+            .main-stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            .stat-card {
+                padding: 16px 12px;
+            }
+            .stat-card-value {
+                font-size: 1.6rem;
+                margin-bottom: 4px;
+            }
+            .stat-card-label {
+                font-size: 0.65rem;
+                letter-spacing: 0.5px;
+            }
+            .performance-tier {
+                padding: 16px 12px;
+                margin-bottom: 20px;
+            }
+            .tier-title {
+                font-size: 0.95rem;
+            }
+            .tier-message {
+                font-size: 1rem;
+            }
+            .section-title {
+                font-size: 1rem;
+                margin-bottom: 12px;
+            }
+            .details-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .detail-item {
+                padding: 12px;
+            }
+            .detail-label {
+                font-size: 0.7rem;
+                letter-spacing: 0.5px;
+            }
+            .detail-value {
+                font-size: 1rem;
+            }
+            .performance-bars {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin-bottom: 20px;
+            }
+            .bar-container {
+                padding: 16px 12px;
+            }
+            .bar-label {
+                font-size: 0.8rem;
+            }
+            .progress-bar {
+                height: 6px;
+            }
+            .progress-value {
+                font-size: 0.8rem;
+            }
+            .chart-wrapper {
+                height: 250px;
+            }
+            .chart-container {
+                padding: 16px 12px;
+            }
+            .actions {
+                padding: 16px 0;
+            }
+            .report-btn {
+                display: block;
+                width: 100%;
+                margin: 8px 0;
+                padding: 10px 16px;
+                font-size: 0.8rem;
+                letter-spacing: 1px;
+            }
+        }
+
+        /* Extra small phones (360px and below) */
+        @media (max-width: 360px) {
+            .wrapper.report-container {
+                padding: 12px 10px;
+            }
+            .report-title {
+                font-size: 1.4rem;
+            }
+            .report-subtitle {
+                font-size: 0.65rem;
+            }
+            .main-stats {
+                gap: 8px;
+            }
+            .stat-card {
+                padding: 12px 8px;
+            }
+            .stat-card-value {
+                font-size: 1.4rem;
+            }
+            .chart-wrapper {
+                height: 200px;
+            }
+            .section-title {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body class="report-page">
+
+<canvas id="bg-canvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+
+<div class="wrapper report-container">
+    <div class="report-header">
+        <div class="report-title">Test Report</div>
+    </div>
+
+    <!-- Stats and Graph Side-by-Side Section -->
+    <div class="stats-graph-section">
+        <!-- Left Column: Key Stats -->
+        <div class="stats-column">
+            <div class="stat-item-large">
+                <span class="stat-item-large-value" id="wpm-value-large">0</span>
+                <span class="stat-item-large-label">WPM</span>
+            </div>
+            <div class="stat-item-large">
+                <span class="stat-item-large-value" id="acc-value-large">0%</span>
+                <span class="stat-item-large-label">Accuracy</span>
+            </div>
+            <div class="stat-item-large">
+                <span class="stat-item-large-value" id="errors-value-large">0</span>
+                <span class="stat-item-large-label">Errors</span>
+            </div>
+        </div>
+        
+        <!-- Right Column: Performance Graph -->
+        <div class="graph-column">
+            <div class="chart-container-side">
+                <div class="chart-title-side">Performance Graph</div>
+                <div class="chart-wrapper-side">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Stats Cards (Hidden for now, but kept for compatibility) -->
+    <div class="main-stats" id="main-stats" style="display: none;">
+        <div class="stat-card">
+            <span class="stat-card-value" id="wpm-value">0</span>
+            <span class="stat-card-label">WPM</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-card-value" id="acc-value">0%</span>
+            <span class="stat-card-label">Accuracy</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-card-value" id="chars-value">0</span>
+            <span class="stat-card-label">Characters</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-card-value" id="errors-value">0</span>
+            <span class="stat-card-label">Errors</span>
+        </div>
+    </div>
+
+    <!-- Performance Tier -->
+    <div class="performance-tier" id="tier-section" style="display: none;">
+        <div class="tier-title" id="tier-title">Exceptional</div>
+        <div class="tier-message" id="tier-message">Loading...</div>
+    </div>
+
+    <!-- Details Section -->
+    <div class="section">
+        <h2 class="section-title">Test Details</h2>
+        <div class="details-grid">
+            <div class="detail-item">
+                <div class="detail-label">Duration</div>
+                <div class="detail-value" id="duration-value">30s</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Words Typed</div>
+                <div class="detail-value" id="words-typed">0</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Correct Characters</div>
+                <div class="detail-value" id="correct-chars">0</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Error Rate</div>
+                <div class="detail-value" id="error-rate">0%</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Mode</div>
+                <div class="detail-value" id="mode-value">Lowercase</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Test Timestamp</div>
+                <div class="detail-value" id="timestamp-value">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics Section -->
+    <div class="section">
+        <h2 class="section-title">Performance Metrics</h2>
+        <div class="performance-bars">
+            <div class="bar-container">
+                <div class="bar-label">Accuracy Progress</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="acc-progress" style="width: 0%;"></div>
+                </div>
+                <div class="progress-value" id="acc-percent">0%</div>
+            </div>
+            <div class="bar-container">
+                <div class="bar-label">Speed (WPM)</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="wpm-progress" style="width: 0%;"></div>
+                </div>
+                <div class="progress-value" id="wpm-percent">0 WPM</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+        <button class="report-btn" onclick="location.href='index.html'">← Back to Test</button>
+        <button class="report-btn" onclick="downloadReport()">↓ Download Report</button>
+    </div>
+</div>
+
+<script src="report.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
