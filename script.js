@@ -1,4 +1,3 @@
-
 const SENTENCE_POOL = [
   "the morning breeze carried the scent of pine across the quiet valley",
   "a complex problem often requires patience and careful observation",
@@ -388,7 +387,7 @@ function rotateChallengeQuote() {
 
 function startChallengeRotation() {
   setQuoteText(CHALLENGE_QUOTES[challengeIdx]);
-  challengeInterval = setInterval(rotateChallengeQuote, 5500);
+  challengeInterval = setInterval(rotateChallengeQuote, 5000);
 }
 
 function stopChallengeRotation() {
@@ -502,9 +501,13 @@ function startScrambler() {
     });
     // determine how many first-line words lie completely in left half
     let skipUpToIndex = -1;
+    let maxFirstLineIndex = -1;
     firstLineWords.sort((a,b)=>a.left-b.left).forEach(w => {
+      maxFirstLineIndex = Math.max(maxFirstLineIndex, w.wi);
       if (w.right <= midX) skipUpToIndex = w.wi;
     });
+    // Skip all first-line words by using the max index
+    skipUpToIndex = maxFirstLineIndex;
     charElements.forEach((charRow, wi) => {
       charRow.forEach((charEl) => {
         if (!charEl.classList.contains('correct') && !charEl.classList.contains('wrong')) {
@@ -562,15 +565,18 @@ function renderWords() {
 
   wordElements = []; charElements = [];
   words.forEach((word, wi) => {
+    // Clean word: remove punctuation for display
+    const cleanWord = word.toLowerCase().replace(/[^\w\s]/g, '');
+    
     const wordEl = document.createElement('span');
     wordEl.className = 'word';
     const charEls = [];
-    word.split('').forEach((ch, ci) => {
+    cleanWord.split('').forEach((ch, ci) => {
       const charEl = document.createElement('span');
       charEl.className = 'char scrambling';
-      // Start as a random char � scrambler takes over immediately
+      // Start as a random char
       charEl.textContent = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
-      // Use doc1's original resting opacity/color
+      // Use original resting opacity/color
       charEl.style.opacity = '0.75';
       charEl.style.color   = 'rgba(175,175,175,0.55)';
       wordEl.appendChild(charEl);
@@ -641,10 +647,8 @@ function moveCursor() {
   
   // Ensure cursor is visible
   cursorBeam.style.display = 'block';
-  cursorBeam.style.left   = left + 'px';
-  cursorBeam.style.top    = top  + 'px';
   cursorBeam.style.height = height + 'px';
-  // if (started && !finished) spawnSpark(left + 1, top + height * 0.5);
+  cursorBeam.style.transform = 'translate(' + left + 'px, ' + top + 'px)';
 }
 
 function animateCountUp(el, target, duration, suffix = '') {
@@ -725,38 +729,85 @@ function restoreStatsPanel() {
     statsPanel.classList.replace('show-results', 'during-test');
 }
 
-const ARC_R = 30;
-const ARC_C = 2 * Math.PI * ARC_R;
 let _arcTotal = 30;
 
-function renderArcTimer(container, seconds) {
-  const fraction = Math.max(0, seconds / _arcTotal);
-  const offset   = ARC_C * (1 - fraction);
-  const label    = seconds >= 60
-    ? Math.floor(seconds/60) + ':' + String(seconds%60).padStart(2,'0')
-    : String(seconds);
+// 3×5 pixel-block digit segments (each digit = 5 rows × 3 cols of 0/1)
+const DIGIT_MAP = [
+  [[1,1,1],[1,0,1],[1,0,1],[1,0,1],[1,1,1]], // 0
+  [[0,1,0],[1,1,0],[0,1,0],[0,1,0],[1,1,1]], // 1
+  [[1,1,1],[0,0,1],[1,1,1],[1,0,0],[1,1,1]], // 2
+  [[1,1,1],[0,0,1],[1,1,1],[0,0,1],[1,1,1]], // 3
+  [[1,0,1],[1,0,1],[1,1,1],[0,0,1],[0,0,1]], // 4
+  [[1,1,1],[1,0,0],[1,1,1],[0,0,1],[1,1,1]], // 5
+  [[1,1,1],[1,0,0],[1,1,1],[1,0,1],[1,1,1]], // 6
+  [[1,1,1],[0,0,1],[0,0,1],[0,0,1],[0,0,1]], // 7
+  [[1,1,1],[1,0,1],[1,1,1],[1,0,1],[1,1,1]], // 8
+  [[1,1,1],[1,0,1],[1,1,1],[0,0,1],[1,1,1]], // 9
+];
 
-  let prog = container.querySelector('.arc-progress');
-  let num  = container.querySelector('.arc-number');
-  if (!prog) {
-    container.innerHTML = `
-      <svg class="arc-svg" viewBox="0 0 72 72">
-        <circle class="arc-track"    cx="36" cy="36" r="${ARC_R}"/>
-        <circle class="arc-progress" cx="36" cy="36" r="${ARC_R}"
-          stroke-dasharray="${ARC_C}"
-          stroke-dashoffset="${offset}"/>
-      </svg>
-      <div class="arc-number">${label}</div>`;
+function buildDigit(d) {
+  const grid = DIGIT_MAP[d];
+  const wrap = document.createElement('div');
+  wrap.className = 'pxd-digit';
+  grid.forEach(row => {
+    row.forEach(on => {
+      const cell = document.createElement('div');
+      cell.className = 'pxd-cell' + (on ? ' on' : '');
+      wrap.appendChild(cell);
+    });
+  });
+  return wrap;
+}
+
+function renderPixelTimer(container, seconds) {
+  let label;
+  if (seconds >= 60) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    label = String(mins) + ':' + String(secs).padStart(2,'0');
   } else {
-    prog.setAttribute('stroke-dashoffset', offset);
-    num.textContent = label;
+    label = String(seconds);
+  }
+
+  const existing = container.querySelectorAll('.pxd-digit, .pxd-colon');
+  const chars = label.split('');
+
+  if (existing.length === chars.length) {
+    // Update existing cells in-place
+    const digits = container.querySelectorAll('.pxd-digit');
+    let di = 0;
+    chars.forEach(ch => {
+      if (ch === ':') return;
+      const d = parseInt(ch);
+      const cells = digits[di].querySelectorAll('.pxd-cell');
+      DIGIT_MAP[d].flat().forEach((on, i) => {
+        cells[i].className = 'pxd-cell' + (on ? ' on' : '');
+      });
+      di++;
+    });
+  } else {
+    container.innerHTML = '';
+    chars.forEach(ch => {
+      if (ch === ':') {
+        const col = document.createElement('div');
+        col.className = 'pxd-colon';
+        col.innerHTML = '<div class="pxd-dot"></div><div class="pxd-dot"></div>';
+        container.appendChild(col);
+      } else {
+        container.appendChild(buildDigit(parseInt(ch)));
+      }
+    });
   }
 }
 
 function initArcTimer(container, total) {
   _arcTotal = total;
   container.innerHTML = '';
-  renderArcTimer(container, total);
+  renderPixelTimer(container, total);
+}
+
+function renderArcTimer(container, seconds) {
+  renderPixelTimer(container, seconds);
 }
 
 function startTyping() {
@@ -834,22 +885,24 @@ function endTest() {
 }
 
 function commitWord(typedInput) {
-  const typed = typedInput.trim();
+  const typed = typedInput.trim().toLowerCase();
   const currentWord = words[currentWordIndex];
-  for (let i = currentCharIndex; i < currentWord.length; i++)
+  const cleanWord = currentWord.toLowerCase().replace(/[^\w\s]/g, '');
+  
+  for (let i = currentCharIndex; i < cleanWord.length; i++)
     charElements[currentWordIndex][i]?.classList.add('wrong');
-  const compareLen = Math.max(typed.length, currentWord.length);
+  const compareLen = Math.max(typed.length, cleanWord.length);
   for (let i = 0; i < compareLen; i++) {
     totalTyped++;
-    if (i < typed.length && i < currentWord.length && typed[i] === currentWord[i]) correctChars++;
+    if (i < typed.length && i < cleanWord.length && typed[i] === cleanWord[i]) correctChars++;
     else totalErrors++;
   }
-  if (typed !== currentWord) {
+  if (typed !== cleanWord) {
     const wEl = wordElements[currentWordIndex];
 
   }
   currentWordIndex++; currentCharIndex = 0; hiddenInput.value = '';
-  if (typed === words[currentWordIndex - 1]) {
+  if (typed === cleanWord) {
     const prevEl = wordElements[currentWordIndex - 1];
     if (prevEl) {
       prevEl.classList.add('committed');
@@ -866,6 +919,9 @@ hiddenInput.addEventListener('input', () => {
   if (finished) return;
   const inputVal = hiddenInput.value;
   const currentWord = words[currentWordIndex];
+  
+  // Clean word: remove punctuation and convert to lowercase for comparison
+  const cleanWord = currentWord.toLowerCase().replace(/[^\w\s]/g, '');
 
   if (inputVal.endsWith(' ')) {
     if (inputVal.trim() === '') { hiddenInput.value = ''; return; }
@@ -876,7 +932,7 @@ hiddenInput.addEventListener('input', () => {
       const wasWrong = charEl.classList.contains('wrong');
       charEl.classList.remove('correct', 'wrong');
       if (i < inputVal.length) {
-        if (inputVal[i] === currentWord[i]) {
+        if (inputVal[i].toLowerCase() === cleanWord[i]) {
           charEl.classList.add('correct');
         } else {
           if (!wasWrong) void charEl.offsetWidth;
@@ -891,7 +947,7 @@ hiddenInput.addEventListener('input', () => {
   cursorBeam.classList.remove('cursor-blink');
   cursorBlinkTimeout = setTimeout(() => {
     cursorBeam.classList.add('cursor-blink');
-  }, 70);
+  }, 500);
 });
 
 hiddenInput.addEventListener('keydown', e => {
@@ -903,10 +959,20 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Tab') { e.preventDefault(); generateWords(); resetTest(); return; }
 
   if (!started && !finished) {
-    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey && e.key !== ' ') {
       e.preventDefault();
       hiddenInput.focus();
+      // Add the first character to input and start typing
+      hiddenInput.value = e.key;
       startTyping();
+      // Trigger input event to process the first character
+      hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+    } else if (e.key === ' ' && !started && !finished) {
+      e.preventDefault();
+      hiddenInput.focus();
+      hiddenInput.value = ' ';
+      startTyping();
+      hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
     }
   }
 });
@@ -1071,225 +1137,10 @@ window.addEventListener('resize', () => {
 generateWords();
 resetTest();
 
-// --- BACKGROUND CANVAS ANIMATION -------------------------------------------
+// --- BACKGROUND CANVAS - DISABLED (only grid background is shown via CSS) ---
 (function() {
   const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
-  let W, H;
-
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+  if (canvas) {
+    canvas.style.display = 'none';
   }
-  resize();
-  window.addEventListener('resize', resize);
-
-  const ORB_COUNT = 6;
-  const orbs = Array.from({ length: ORB_COUNT }, (_, i) => ({
-    x: Math.random() * W,
-    y: Math.random() * H,
-    r: 120 + Math.random() * 200,
-    vx: (Math.random() - 0.5) * 0.35,
-    vy: (Math.random() - 0.5) * 0.35,
-    opacity: 0.03 + Math.random() * 0.04,
-    phase: Math.random() * Math.PI * 2,
-    speed: 0.0008 + Math.random() * 0.001,
-  }));
-
-  const PARTICLE_COUNT = 55;
-  const particles = Array.from({ length: PARTICLE_COUNT }, () => makeParticle());
-
-  function makeParticle() {
-    return {
-      x: Math.random() * (W || window.innerWidth),
-      y: Math.random() * (H || window.innerHeight),
-      size: 0.6 + Math.random() * 1.6,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: -0.15 - Math.random() * 0.45,
-      opacity: 0.08 + Math.random() * 0.22,
-      life: Math.random(),
-      decay: 0.0015 + Math.random() * 0.003,
-    };
-  }
-
-  const rings = [];
-  function spawnRing() {
-    rings.push({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: 0,
-      maxR: 180 + Math.random() * 220,
-      opacity: 0.12,
-      speed: 0.6 + Math.random() * 0.7,
-    });
-  }
-  setInterval(spawnRing, 2200);
-  spawnRing();
-
-  function drawConstellation() {
-    const maxDist = 90;
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const d = Math.sqrt(dx * dx + dy * dy);
-        if (d < maxDist) {
-          const alpha = (1 - d / maxDist) * 0.06;
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(245,197,66,${alpha})`;
-          ctx.lineWidth = 0.5;
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-  }
-
-  const SPARKLE_COUNT = 70;
-
-  function makeStar() {
-    return {
-      x:       Math.random() * (W || window.innerWidth),
-      y:       Math.random() * (H || window.innerHeight),
-      size:    0.8 + Math.random() * 2.2,
-      points:  Math.random() < 0.5 ? 4 : 6,
-      rot:     Math.random() * Math.PI * 2,
-      rotSpeed:(Math.random() - 0.5) * 0.04,
-      vx:      (Math.random() - 0.5) * 0.3,
-      vy:      -0.08 - Math.random() * 0.25,
-      opacity: 0,
-      maxOp:   0.18 + Math.random() * 0.22,
-      phase:   Math.random() * Math.PI * 2,
-      twinkleSpeed: 0.025 + Math.random() * 0.04,
-      born:    0,
-      lifespan: 180 + Math.random() * 300,
-      age:     Math.floor(Math.random() * 300),
-    };
-  }
-
-  const sparkles = Array.from({ length: SPARKLE_COUNT }, makeStar);
-
-  function drawStar(cx, cy, pts, outer, inner, rot) {
-    ctx.beginPath();
-    for (let i = 0; i < pts * 2; i++) {
-      const r = i % 2 === 0 ? outer : inner;
-      const angle = rot + (i * Math.PI) / pts;
-      i === 0 ? ctx.moveTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle))
-              : ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
-    }
-    ctx.closePath();
-  }
-
-  function drawSparkles() {
-    sparkles.forEach((s, idx) => {
-      s.age++;
-      s.rot += s.rotSpeed;
-      s.x   += s.vx;
-      s.y   += s.vy;
-      s.phase += s.twinkleSpeed;
-
-      const halfLife = s.lifespan * 0.5;
-      if (s.age < halfLife * 0.3) {
-        s.opacity = s.maxOp * (s.age / (halfLife * 0.3));
-      } else if (s.age > s.lifespan * 0.7) {
-        s.opacity = s.maxOp * (1 - (s.age - s.lifespan * 0.7) / (s.lifespan * 0.3));
-      } else {
-        s.opacity = s.maxOp * (0.6 + 0.4 * Math.sin(s.phase));
-      }
-
-      if (s.age > s.lifespan || s.y < -20) {
-        sparkles[idx] = makeStar();
-        sparkles[idx].y = H + 10;
-        sparkles[idx].age = 0;
-        return;
-      }
-
-      const a = Math.max(0, s.opacity);
-      if (a < 0.005) return;
-
-      const outer = s.size;
-      const inner = s.size * 0.38;
-      drawStar(s.x, s.y, s.points, outer, inner, s.rot);
-
-      const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, outer * 1.2);
-      grad.addColorStop(0,   `rgba(255,248,214,${a})`);
-      grad.addColorStop(0.5, `rgba(245,197,66,${a * 0.55})`);
-      grad.addColorStop(1,   `rgba(245,197,66,0)`);
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      if (s.size > 1.6) {
-        ctx.save();
-        ctx.globalAlpha = a * 0.35;
-        ctx.strokeStyle = `rgba(255,248,214,${a * 0.7})`;
-        ctx.lineWidth = 0.4;
-        const arm = s.size * 2.0;
-        ctx.beginPath();
-        ctx.moveTo(s.x - arm, s.y); ctx.lineTo(s.x + arm, s.y);
-        ctx.moveTo(s.x, s.y - arm); ctx.lineTo(s.x, s.y + arm);
-        ctx.stroke();
-        ctx.restore();
-      }
-    });
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-
-    orbs.forEach(o => {
-      o.phase += o.speed;
-      const pulse = Math.sin(o.phase) * 0.012;
-      o.x += o.vx;
-      o.y += o.vy;
-      if (o.x < -o.r) o.x = W + o.r;
-      if (o.x > W + o.r) o.x = -o.r;
-      if (o.y < -o.r) o.y = H + o.r;
-      if (o.y > H + o.r) o.y = -o.r;
-      const grad = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
-      grad.addColorStop(0,   `rgba(245,197,66,${o.opacity + pulse})`);
-      grad.addColorStop(0.5, `rgba(245,197,66,${(o.opacity + pulse) * 0.4})`);
-      grad.addColorStop(1,   `rgba(245,197,66,0)`);
-      ctx.beginPath();
-      ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-    });
-
-    drawConstellation();
-
-    particles.forEach((p, idx) => {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life -= p.decay;
-      if (p.life <= 0 || p.y < -10) {
-        particles[idx] = makeParticle();
-        particles[idx].y = H + 5;
-        return;
-      }
-      const a = p.opacity * p.life;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(245,197,66,${a})`;
-      ctx.fill();
-    });
-
-    drawSparkles();
-
-    for (let i = rings.length - 1; i >= 0; i--) {
-      const ring = rings[i];
-      ring.r += ring.speed;
-      ring.opacity = 0.12 * (1 - ring.r / ring.maxR);
-      if (ring.r >= ring.maxR) { rings.splice(i, 1); continue; }
-      ctx.beginPath();
-      ctx.arc(ring.x, ring.y, ring.r, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(245,197,66,${ring.opacity})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  draw();
 })();
