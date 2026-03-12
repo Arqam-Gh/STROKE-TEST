@@ -1,5 +1,5 @@
 :root {
-    --bg: #0a0a0a;
+    --bg: #1a1a1a;
     --surface: #0f0f0f;
     --border: #1e1e1e;
     --text: #e8e8e8;
@@ -16,7 +16,59 @@
     --cursor-blink-speed: 1s;
     --cursor-style: line;
   }
+/* ── Pixel-block timer ──────────────────────────────── */
+#time-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+}
 
+.pxd-digit {
+  display: grid;
+  grid-template-columns: repeat(3, 14px);
+  grid-template-rows: repeat(5, 14px);
+  gap: 4px;
+  margin-right: 18px;
+}
+
+.pxd-digit + .pxd-colon {
+  margin-left: -12px;
+}
+
+.pxd-digit:last-of-type {
+  margin-right: 0;
+}
+
+.pxd-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  background: rgba(245,197,66,0.01);
+  transition: background 0.12s;
+}
+
+.pxd-cell.on {
+  background: #f5c542;
+  box-shadow: none;
+}
+
+.pxd-colon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 0 2px;
+  margin: 0 3px;
+}
+
+.pxd-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  background: #f5c542;
+  box-shadow: none;
+}
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; overflow: hidden; }
   body.report-page { overflow: auto; }
@@ -42,11 +94,7 @@
     pointer-events: none; z-index: 0;
   }
   body::after {
-    content: ''; position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse 600px 300px at 0% 0%, rgba(245,197,66,0.05) 0%, transparent 70%),
-      radial-gradient(ellipse 600px 300px at 100% 100%, rgba(245,197,66,0.04) 0%, transparent 70%);
-    pointer-events: none; z-index: 0;
+    display: none;
   }
 
 
@@ -73,7 +121,7 @@
   header {
     flex-shrink: 0;
     display: flex; justify-content: space-between; align-items: center;
-    padding-bottom: 6px; border-bottom: 1px solid var(--border);
+    padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.04);
   }
 
 
@@ -139,7 +187,7 @@
   .stats-panel {
     flex-shrink: 0;
     display: grid; gap: 1px;
-    background: transparent; border-bottom: 1px solid var(--border);
+    background: transparent; border-bottom: 1px solid rgba(255,255,255,0.04);
   }
   .stats-panel.during-test  { grid-template-columns: 1fr 2.5fr; }
   .stats-panel.show-results { grid-template-columns: repeat(4,1fr); }
@@ -163,7 +211,7 @@
   .stat-value.big { font-size: 4rem; }
   .stat-label {
     font-size: 0.82rem; font-weight: 700; color: var(--muted2);
-    letter-spacing: 2.5px; text-transform: uppercase; margin-top: 2px; display: block;
+    letter-spacing: 2.5px; text-transform: uppercase; margin-top: 2px; display: none;
   }
 
   .stat-quote {
@@ -187,38 +235,41 @@
   .options-row {
     flex-shrink: 0;
     display: flex; align-items: center;
-    padding: 8px 28px; border-bottom: 1px solid var(--border);
+    padding: 8px 28px; border-bottom: 1px solid rgba(255,255,255,0.04);
   }
-  .opt-label { font-size: 0.78rem; font-weight: 700; color: var(--muted2); letter-spacing: 2px; text-transform: uppercase; margin-right: 20px; white-space: nowrap; }
+  .opt-label { font-size: 0.78rem; font-weight: 700; color: var(--muted2); letter-spacing: 2px; text-transform: uppercase; margin-right: 20px; white-space: nowrap; display: none; }
 
   .duration-track {
     position: relative;
     display: flex;
-    background: rgba(255,255,255,0.025);
-    border: 1px solid var(--border);
-    padding: 3px;
-    gap: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    gap: 12px;
   }
   .duration-pill {
     position: absolute;
-    top: 3px; bottom: 3px;
-    background: var(--accent);
-    transition: left 0.32s cubic-bezier(0.34,1.56,0.64,1), width 0.32s cubic-bezier(0.34,1.56,0.64,1);
+    top: 0; bottom: 0;
+    background: transparent;
+    transition: none;
     pointer-events: none;
     z-index: 0;
+    display: none;
   }
   .duration-option {
     position: relative; z-index: 1;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.82rem; font-weight: 700; letter-spacing: 1px;
-    color: var(--muted2);
-    background: transparent; border: none;
-    padding: 6px 26px;
+    color: #999;
+    background: transparent; border: 1px solid transparent;
+    padding: 8px 16px;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
     white-space: nowrap;
+    border-radius: 0px;
   }
-  .duration-option.active { color: #000; }
+  .duration-option.active { color: var(--accent); background: transparent; border-color: transparent; border-bottom: 2px solid var(--accent); padding-bottom: 6px; }
+  .duration-option:not(.active):hover { color: var(--accent); border-bottom: 2px solid transparent; }
   .duration-option:not(.active):hover { color: var(--accent); }
 
   @keyframes optIn {
@@ -232,37 +283,40 @@
   .mode-track {
     position: relative;
     display: flex;
-    background: rgba(255,255,255,0.025);
-    border: 1px solid var(--border);
-    padding: 3px;
-    gap: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    gap: 12px;
   }
   .mode-pill {
     position: absolute;
-    top: 3px; bottom: 3px;
-    background: var(--accent);
-    transition: left 0.32s cubic-bezier(0.34,1.56,0.64,1), width 0.32s cubic-bezier(0.34,1.56,0.64,1);
+    top: 0; bottom: 0;
+    background: transparent;
+    transition: none;
     pointer-events: none;
     z-index: 0;
+    display: none;
   }
   .mode-option {
     position: relative; z-index: 1;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;
-    color: var(--muted2);
-    background: transparent; border: none;
-    padding: 6px 16px;
+    color: #999;
+    background: transparent; border: 1px solid transparent;
+    padding: 8px 16px;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
     white-space: nowrap;
+    border-radius: 0px;
   }
-  .mode-option.active { color: #000; }
-  .mode-option:not(.active):hover { color: var(--accent); }
+  .mode-option.active { color: var(--accent); background: transparent; border-color: transparent; border-bottom: 2px solid var(--accent); padding-bottom: 6px; }
+  .mode-option:not(.active):hover { color: var(--accent); border-bottom: 2px solid transparent; }
 
   /* -- SOLID timer bar � no shimmer, no glow -- */
   .timer-bar-wrap {
+    display: none;
     flex-shrink: 0;
-    height: 7px;
+    height: 4px;
     background: rgba(255,255,255,0.04);
     position: relative; overflow: hidden;
   }
@@ -296,15 +350,16 @@
   /* -- Clean, solid "Hit a key to start" box -- */
   .click-prompt-text {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
-    letter-spacing: 7px;
+    font-size: 1.1rem;
+    letter-spacing: 5px;
     color: #000;
     background: var(--accent);
-    padding: 14px 44px;
+    padding: 10px 32px;
     position: relative;
     animation: promptSolidPulse 2.4s ease-in-out infinite;
     text-transform: uppercase;
     border: none;
+    opacity: 0.65;
   }
   .click-prompt-text::before {
     content: '';
@@ -325,8 +380,8 @@
     pointer-events: none;
   }
   @keyframes promptSolidPulse {
-    0%, 100% { background: var(--accent);  opacity: 1; }
-    50%       { background: var(--accent2); opacity: 0.88; }
+    0%, 100% { background: var(--accent);  opacity: 0.65; }
+    50%       { background: var(--accent2); opacity: 0.55; }
   }
 
   @keyframes quoteEntrance {
@@ -369,7 +424,11 @@
     position: relative;
     overflow: hidden;
     height: 100%;
+    max-height: 310px;
     transition: color 0.4s ease;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   .words-display.active-typing { color: #7a7a7a; opacity: 0.8; }
   .words-display::after {
@@ -387,7 +446,7 @@
 
   .char { display: inline-block; position: relative; color: inherit; }
   .char.correct { 
-    color: #f5c542 !important; 
+    color: var(--accent);
     opacity: 1 !important;
   }
   .char.wrong {
@@ -398,7 +457,7 @@
     0%, 100% { opacity: var(--cursor-opacity); }
   }
   @keyframes smoothCursor {
-    0%, 100% { opacity: 0.7; }
+    0%, 100% { opacity: 0.6; }
     50% { opacity: 1; }
   }
   .cursor-spark {
@@ -431,49 +490,80 @@
   }
 
 
+  /* ── SEGMENTED BLOCK TIMER ── */
   #time-display {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    width: 72px;
-    height: 72px;
+    gap: 18px;
   }
-  .arc-svg {
-    position: absolute;
-    inset: 0;
-    width: 100%; height: 100%;
-    transform: rotate(-90deg);
-    overflow: visible;
+
+  .seg-digit-group {
+    display: flex;
+    gap: 18px;
   }
-  .arc-track {
-    fill: none;
-    stroke: rgba(245,197,66,0.12);
-    stroke-width: 5;
+
+  .seg-digit {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
   }
-  .arc-progress {
-    fill: none;
-    stroke: var(--accent);
-    stroke-width: 6;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1), stroke 0.3s ease;
+
+  .seg-row {
+    display: flex;
+    gap: 3px;
   }
-  .arc-number {
-    position: absolute;
-    inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.55rem;
-    letter-spacing: 2px;
-    color: var(--accent);
-    transition: color 0.3s ease;
-    line-height: 1;
+
+  .seg-block {
+    width: 14px;
+    height: 14px;
+    background: rgba(245,197,66,0.10);
+    border-radius: 2px;
+    transition: background 0.15s ease;
   }
-  #time-display.urgent .arc-progress {
-    stroke: #ff4422;
+
+  .seg-block.on {
+    background: var(--accent);
+    box-shadow: none;
   }
-  #time-display.urgent .arc-number {
-    color: #ff4422;
+
+  .seg-colon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 2px;
+  }
+
+  .seg-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(245,197,66,0.15);
+    transition: background 0.15s ease;
+  }
+
+  .seg-dot.on {
+    background: var(--accent);
+    box-shadow: none;
+  }
+
+  #time-display.urgent .seg-block.on {
+    background: var(--accent);
+    box-shadow: none;
+    animation: none;
+  }
+
+  #time-display.urgent .seg-dot.on {
+    background: var(--accent);
+    box-shadow: none;
+    animation: none;
+  }
+
+  @keyframes urgentPulse {
+    from { opacity: 0.7; }
+    to   { opacity: 1; }
   }
 
   @keyframes rowIn {
@@ -491,19 +581,19 @@
     opacity: 1;
   }
 
-  /* Cursor - Smooth animation with smooth movement */
+  /* Cursor - Ultra smooth animation */
+  /* Cursor - MonkeyType style with transform-based movement */
   #cursor-beam {
-    position: absolute; width: var(--cursor-thickness); border-radius: 1px;
+    position: absolute; width: var(--cursor-thickness); height: 30px; border-radius: 1px;
     background: var(--cursor-color); pointer-events: none; z-index: 10; display: none;
-    opacity: var(--cursor-opacity);
-    box-shadow: 0 0 10px rgba(245,197,66,0.4);
-    animation: smoothCursor 1.5s ease-in-out infinite;
-    transition: left 0.08s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-                top 0.08s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-                height 0.08s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(245,197,66,0.6);
+    will-change: transform;
+    transform: translate(0, 0);
+    transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   #cursor-beam.cursor-blink {
-    animation: smoothCursor 1.5s ease-in-out infinite;
+    animation: smoothCursor 1s ease-in-out infinite;
   }
 
   #hidden-input {
@@ -539,7 +629,7 @@
 
 
 
-  .hint-small { font-size: 0.7rem; font-weight: 600; color: var(--muted2); letter-spacing: 1px; margin-left: 4px; }
+  .hint-small { font-size: 0.7rem; font-weight: 600; color: var(--muted2); letter-spacing: 1px; margin-left: 4px; display: none; }
 
   /* ----------------------------------------------
      RESTART BUTTON
@@ -549,30 +639,35 @@
     font-size: 1rem !important;
     letter-spacing: 5px !important;
     padding: 0 !important;
-    background: transparent !important;
-    border: none !important;
+    background: var(--bg) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
     color: var(--accent) !important;
-    display: flex !important;
+    display: none !important;
     align-items: stretch !important;
-    overflow: visible !important;
+    overflow: hidden !important;
     position: relative !important;
     cursor: pointer !important;
     outline: none !important;
     height: 40px;
+    transition: all 0.2s ease !important;
+  }
+  #restart-btn:hover {
+    background: rgba(245,197,66,0.1) !important;
+    border-color: rgba(255,255,255,0.15) !important;
   }
 
   #restart-btn .rb-shell {
     display: flex;
     align-items: stretch;
     position: relative;
-    border: 1px solid rgba(245,197,66,0.25);
+    border: none;
     overflow: hidden;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    background: #050505;
+    transition: none;
+    background: transparent;
   }
   #restart-btn:hover .rb-shell,
   #restart-btn.firing .rb-shell {
-    border-color: rgba(245,197,66,0.7);
+    border-color: transparent;
   }
 
   #restart-btn .rb-icon-inner {
@@ -604,34 +699,35 @@
   #restart-btn .rb-charge {
     position: absolute;
     bottom: 0; left: 0;
-    height: 2px;
+    height: 0px;
     width: 0%;
-    background: linear-gradient(90deg, transparent, var(--accent), var(--accent2));
-    transition: width 0s;
+    background: transparent;
+    transition: none;
     pointer-events: none;
     z-index: 4;
+    display: none;
   }
   #restart-btn:hover .rb-charge {
-    width: 100%;
-    transition: width 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+    transition: none;
   }
 
   #restart-btn .rb-icon {
     width: 40px;
     display: flex; align-items: center; justify-content: center;
-    border-right: 1px solid rgba(245,197,66,0.15);
+    border-right: none;
     color: var(--accent);
     font-size: 1.1rem;
     flex-shrink: 0;
     position: relative;
     overflow: hidden;
-    transition: border-color 0.3s;
-    background: rgba(245,197,66,0.04);
+    transition: none;
+    background: transparent;
   }
-  #restart-btn:hover .rb-icon { border-right-color: rgba(245,197,66,0.35); background: rgba(245,197,66,0.08); }
+  #restart-btn:hover .rb-icon { border-right-color: transparent; background: transparent; }
 
   #restart-btn:hover .rb-icon-inner {
-    transform: rotate(-200deg) scale(1.15);
+    transform: rotate(0deg) scale(1);
     animation: none !important;
   }
 
@@ -639,24 +735,25 @@
   #restart-btn .rb-corner-br {
     position: absolute;
     width: 0px; height: 0px;
-    transition: width 0.25s ease, height 0.25s ease, opacity 0.25s ease;
+    transition: none;
     opacity: 0;
     pointer-events: none;
     z-index: 10;
+    display: none;
   }
   #restart-btn .rb-corner-tl {
     top: -2px; left: -2px;
-    border-top: 2px solid var(--accent);
-    border-left: 2px solid var(--accent);
+    border-top: none;
+    border-left: none;
   }
   #restart-btn .rb-corner-br {
     bottom: -2px; right: -2px;
-    border-bottom: 2px solid var(--accent);
-    border-right: 2px solid var(--accent);
+    border-bottom: none;
+    border-right: none;
   }
   #restart-btn:hover .rb-corner-tl,
   #restart-btn:hover .rb-corner-br {
-    width: 12px; height: 12px; opacity: 1;
+    width: 0px; height: 0px; opacity: 0;
   }
 
   #restart-btn.firing .rb-shell {
