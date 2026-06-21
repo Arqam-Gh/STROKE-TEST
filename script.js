@@ -1,3 +1,5 @@
+
+
 const SENTENCE_POOL = [
   "the morning breeze carried the scent of pine across the quiet valley",
   "a complex problem often requires patience and careful observation",
@@ -21,7 +23,7 @@ const SENTENCE_POOL = [
   "fixing a vintage clock requires steady hands and exceptional knowledge",
   "navigating by the stars sailors trusted the sky more than any map",
   "the documentary explored how bees communicate through precise movement",
-  "a well-structured argument requires evidence logic and honest reflection",
+  "a wellstructured argument requires evidence logic and honest reflection",
   "the fog rolled in from the harbor blanketing the docks in silence",
   "her painting captured the moment just before rain touches dry earth",
   "birds migrating south adjusted their flight paths based on wind patterns",
@@ -216,7 +218,13 @@ function buildWordList(target) {
   let sentenceIdx = 0;
   while (result.length < target) {
     const sentence = shuffled[sentenceIdx % shuffled.length];
-    sentence.split(' ').forEach(w => { if (result.length < target) result.push(w); });
+    const words = sentence.split(' ');
+    words.forEach((w) => {
+      if (result.length < target) {
+        const wordWithSpace = w + ' ';
+        result.push(wordWithSpace);
+      }
+    });
     sentenceIdx++;
     if (sentenceIdx > 0 && sentenceIdx % shuffled.length === 0) {
       shuffled.sort(() => Math.random() - 0.5);
@@ -225,201 +233,315 @@ function buildWordList(target) {
   return result;
 }
 
-const CHALLENGE_QUOTES = [
-  "no cap, your WPM is about to go crazy ??",
-  "bestie, the keyboard said choose violence",
-  "it's giving speed. it's giving accuracy. slay.",
-  "POV: you actually cooked this time fr fr",
-  "main character energy only. type like you mean it.",
-  "the rizz is irrelevant. fingers on keys. now.",
-  "not me manifesting your highest WPM yet ??",
-  "okay but what if you just... didn't miss a single key",
-  "touch grass later. touch keys now.",
-  "lowkey obsessed with how fast you're about to go",
-  "era of zero typos starts rn bestie",
-  "the delulu is the solulu. believe you're fast. be fast.",
-  "serving keyboard supremacy and we love to see it",
-  "ate and left no crumbs. that's the goal.",
-  "it's giving Olympic-level typing and I'm here for it ?",
-];
+/* ═══════════════════════════════════════════════════════
+   WPM GRAPH - Real-time Performance Visualization
+═══════════════════════════════════════════════════════ */
 
-const LIVE_QUOTES = {
-  slowPoor: [
-    "bestie... are you okay? ??",
-    "this ain't it and we both know it fr",
-    "no cap that was tragic. try again bestie.",
-    "the keyboard is not the problem just saying ??",
-    "touch typing could never be your villain origin story",
-  ],
-  slowOkay: [
-    "it's giving... effort. we respect the grind.",
-    "lowkey warming up or lowkey napping? ??",
-    "the slow and steady arc but like... speedrun it?",
-    "y'all this is giving main character who just woke up",
-    "not bad not good. solidly mid-tier era fr.",
-  ],
-  mediumPoor: [
-    "fast fingers, chaotic energy. very unhinged bestie.",
-    "the speed is there but accuracy said nah ??",
-    "going full send but the keyboard said no lmao",
-    "girlboss speed, girlboss typos. it evens out ig.",
-    "speedrunning errors is not the move fr fr",
-  ],
-  mediumOkay: [
-    "okay not terrible, not elite, very much mid ??",
-    "this is giving 9-to-5 office keyboard warrior era",
-    "you're literally one energy drink away from cooking",
-    "the potential is there and we see it bestie",
-    "solidly fine. but fine is not the vibe we're after.",
-  ],
-  mediumGood: [
-    "okay wait you're actually built different rn ?",
-    "no cap this is lowkey impressive fr",
-    "the glow-up is REAL and I'm obsessed",
-    "slay behavior detected. continue this arc.",
-    "certified keyboard menace and we love to see it ??",
-  ],
-  fastPoor: [
-    "fast as hell but the accuracy said not today ??",
-    "fingers on espresso, brain on chamomile lmao",
-    "bro said speed run and forgot accuracy existed",
-    "chaotic fast energy but we need accuracy to slay",
-    "unhinged speed. truly a disaster but make it fashion.",
-  ],
-  fastGood: [
-    "bestie you're actually cooking and I'm shook ????",
-    "the words are literally scared of you rn",
-    "no cap this is elite behavior fr fr",
-    "ChatGPT is nervous and rightfully so bestie",
-    "you just unlocked main character typing arc ?",
-  ],
-  veryFastGood: [
-    "are you human? be so fr with me rn ??",
-    "this is illegal in multiple countries no cap",
-    "the FBI just opened a tab on you bestie ??",
-    "you type like rent is due in 5 minutes fr",
-    "not the keyboard going absolutely feral rn ????",
-  ],
-  perfect: [
-    "zero typos zero chill absolute unhinged behavior ??",
-    "perfect accuracy?? bestie you are NOT normal",
-    "ate. left no crumbs. not a single one. slay.",
-    "this is giving god-tier and I am not okay ???",
-    "the keyboard just submitted to you and honestly valid",
-  ],
-};
+window.graphCanvas = null;
+window.graphCtx = null;
+window.graphData = []; // Array of {time, wpm} points
+window.graphStartTime = 0;
+window.graphMaxWPM = 50; // Dynamic max Y-axis value
+window.graphTimeWindow = 0; // Will be set to selectedTime
+window.graphAnimationFrame = null;
+window.graphLastRenderTime = 0; // For smooth animation between frames
+let graphLastUpdateTime = 0; // Track last time we updated graph for continuity
 
-function getQuoteTier(wpm, acc) {
-  if (acc === 100 && wpm >= 60)  return 'perfect';
-  if (wpm >= 85  && acc >= 85)   return 'veryFastGood';
-  if (wpm >= 60  && acc >= 78)   return 'fastGood';
-  if (wpm >= 55  && acc < 72)    return 'fastPoor';
-  if (wpm >= 38  && acc >= 78)   return 'mediumGood';
-  if (wpm >= 35  && acc >= 62)   return 'mediumOkay';
-  if (wpm >= 30  && acc < 62)    return 'mediumPoor';
-  if (wpm >= 12  && acc >= 65)   return 'slowOkay';
-  return 'slowPoor';
-}
-
-let lastTier = '', lastLiveIdx = -1;
-function pickLiveQuote(tier) {
-  const pool = LIVE_QUOTES[tier];
-  let idx = Math.floor(Math.random() * pool.length);
-  if (tier === lastTier && pool.length > 1)
-    while (idx === lastLiveIdx) idx = Math.floor(Math.random() * pool.length);
-  lastTier = tier; lastLiveIdx = idx;
-  return pool[idx];
-}
-
-let challengeIdx = Math.floor(Math.random() * CHALLENGE_QUOTES.length);
-let challengeInterval = null;
-
-let typewriterTimer = null;
-
-function typewriterWrite(el, text, onDone) {
-  if (typewriterTimer) { clearTimeout(typewriterTimer); typewriterTimer = null; }
-  el.textContent = '';
-  el.style.opacity = '1';
-  el.style.transform = 'none';
-
-  const chars = text.split('');
-  let i = 0;
-  function typeNext() {
-    if (i >= chars.length) { if (onDone) onDone(); return; }
-    const ch = chars[i];
-    el.textContent += ch;
-    i++;
-    let delay;
-    const r = Math.random();
-    if (ch === ' ') {
-      delay = 35 + Math.random() * 55;
-    } else if (r < 0.06) {
-      delay = 180 + Math.random() * 200;
-    } else if (r < 0.18) {
-      delay = 18 + Math.random() * 14;
-    } else if (r < 0.32) {
-      delay = 65 + Math.random() * 60;
-    } else {
-      delay = 32 + Math.random() * 38;
-    }
-    typewriterTimer = setTimeout(typeNext, delay);
+function initGraph() {
+  window.graphCanvas = document.getElementById('wpm-graph-canvas');
+  if (!window.graphCanvas) return;
+  
+  window.graphCtx = window.graphCanvas.getContext('2d');
+  window.graphData = [];
+  window.graphMaxWPM = 50; // Start with reasonable min scale
+  window.graphStartTime = Date.now();
+  window.graphTimeWindow = window.selectedTime; // Use global selectedTime
+  window.graphLastRenderTime = Date.now();
+  graphLastUpdateTime = 0; // Reset update time tracker
+  
+  // Set canvas size to match container, scaled for high-DPI screens
+  const container = document.getElementById('wpm-graph-container');
+  if (container) {
+    const dpr = window.devicePixelRatio || 1;
+    const logicalW = container.clientWidth;
+    const logicalH = container.clientHeight;
+    window.graphCanvas.width = logicalW * dpr;
+    window.graphCanvas.height = logicalH * dpr;
+    window.graphCanvas.style.width = logicalW + 'px';
+    window.graphCanvas.style.height = logicalH + 'px';
+    window.graphCtx.scale(dpr, dpr);
+    window.graphDPR = dpr;
+    window.graphLogicalW = logicalW;
+    window.graphLogicalH = logicalH;
   }
-  typeNext();
+  
+  // Draw initial state
+  renderGraph();
+  
+  // Start continuous animation loop for smooth rendering
+  startGraphAnimation();
 }
 
-function setQuoteText(text) {
-  const el = document.getElementById('live-quote');
-  if (!el) return;
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(6px)';
-  el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-  setTimeout(() => {
-    el.style.transition = 'none';
-    el.style.transform = 'translateY(0)';
-    typewriterWrite(el, text);
-  }, 280);
+function renderGraph() {
+  if (!window.graphCtx || !window.graphCanvas) return;
+  
+  const w = window.graphLogicalW || window.graphCanvas.width;
+  const h = window.graphLogicalH || window.graphCanvas.height;
+  const margin = 12;
+  const graphW = w - margin * 2;
+  const graphH = h - margin * 2;
+  
+  // Clear canvas with dark background
+  window.graphCtx.fillStyle = 'rgba(26, 26, 26, 1)';
+  window.graphCtx.clearRect(0, 0, w, h);
+  window.graphCtx.fillRect(0, 0, w, h);
+  
+  // Draw background (subtle)
+  window.graphCtx.fillStyle = 'rgba(245, 197, 66, 0.03)';
+  window.graphCtx.fillRect(margin, margin, graphW, graphH);
+  
+  // Draw grid lines (faint)
+  window.graphCtx.strokeStyle = 'rgba(245, 197, 66, 0.12)';
+  window.graphCtx.lineWidth = 0.8;
+  
+  // Vertical grid lines (time)
+  const timeSteps = 4;
+  for (let i = 0; i <= timeSteps; i++) {
+    const x = margin + (graphW / timeSteps) * i;
+    window.graphCtx.beginPath();
+    window.graphCtx.moveTo(x, margin);
+    window.graphCtx.lineTo(x, h - margin);
+    window.graphCtx.stroke();
+  }
+  
+  // Horizontal grid lines (WPM)
+  const wpmSteps = 4;
+  for (let i = 0; i <= wpmSteps; i++) {
+    const y = (h - margin) - (graphH / wpmSteps) * i;
+    window.graphCtx.beginPath();
+    window.graphCtx.moveTo(margin, y);
+    window.graphCtx.lineTo(w - margin, y);
+    window.graphCtx.stroke();
+  }
+  
+  // Draw axes
+  window.graphCtx.strokeStyle = 'rgba(245, 197, 66, 0.4)';
+  window.graphCtx.lineWidth = 2;
+  // X-axis (bottom)
+  window.graphCtx.beginPath();
+  window.graphCtx.moveTo(margin, h - margin);
+  window.graphCtx.lineTo(w - margin, h - margin);
+  window.graphCtx.stroke();
+  // Y-axis (left)
+  window.graphCtx.beginPath();
+  window.graphCtx.moveTo(margin, margin);
+  window.graphCtx.lineTo(margin, h - margin);
+  window.graphCtx.stroke();
+  
+  // If no data, just show dot at origin
+  if (window.graphData.length === 0) {
+    window.graphCtx.fillStyle = '#f5c542';
+    window.graphCtx.beginPath();
+    window.graphCtx.arc(margin, h - margin, 3.5, 0, Math.PI * 2);
+    window.graphCtx.fill();
+    return;
+  }
+  
+  // Dynamic Y-axis scaling
+  const stableData = window.graphData.filter(p => p.time >= 3);
+  
+  if (stableData.length >= 2) {
+    // After 3 seconds: scale based on actual stable typing speed
+    const maxWpmInData = Math.max(...stableData.map(p => p.wpm));
+    // 25% headroom, round up to nearest 10, minimum of 20
+    window.graphMaxWPM = Math.max(20, Math.ceil(maxWpmInData * 1.25 / 10) * 10);
+  }
+  // Before 3 seconds: keep default of 50 (set in initGraph) — ignore early spikes entirely
+  
+  // Calculate ALL points in pixel space
+  const allPoints = window.graphData.map(point => {
+    const px = margin + (point.time / window.graphTimeWindow) * graphW;
+    const py = (h - margin) - (Math.min(point.wpm, window.graphMaxWPM) / window.graphMaxWPM) * graphH;
+    return { px, py, wpm: point.wpm };
+  });
+  
+  // Time-based downsampling — sample at fixed intervals so existing points never shift
+  const interval = Math.max(0.15, window.graphTimeWindow / 200);
+  let points = [];
+  let dataIdx = 0;
+  const lastTime = window.graphData[window.graphData.length - 1].time;
+  
+  for (let t = 0; t <= lastTime; t += interval) {
+    while (dataIdx < window.graphData.length - 1 && window.graphData[dataIdx + 1].time <= t) {
+      dataIdx++;
+    }
+    points.push(allPoints[dataIdx]);
+  }
+  // Always include the very latest point for real-time responsiveness
+  const latestPoint = allPoints[allPoints.length - 1];
+  if (points.length === 0 || points[points.length - 1] !== latestPoint) {
+    points.push(latestPoint);
+  }
+  
+  // Catmull-Rom spline helper — draws smooth cubic curves through all points
+  const tension = 0.15;
+  function drawSpline(ctx, pts) {
+    ctx.moveTo(pts[0].px, pts[0].py);
+    if (pts.length === 2) {
+      ctx.lineTo(pts[1].px, pts[1].py);
+      return;
+    }
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[Math.max(i - 1, 0)];
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+      const p3 = pts[Math.min(i + 2, pts.length - 1)];
+      const cp1x = p1.px + (p2.px - p0.px) * tension;
+      const cp1y = p1.py + (p2.py - p0.py) * tension;
+      const cp2x = p2.px - (p3.px - p1.px) * tension;
+      const cp2y = p2.py - (p3.py - p1.py) * tension;
+      ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.px, p2.py);
+    }
+  }
+  
+  // Draw gradient fill under the curve
+  if (points.length > 1) {
+    const gradient = window.graphCtx.createLinearGradient(0, margin, 0, h - margin);
+    gradient.addColorStop(0, 'rgba(245, 197, 66, 0.35)');
+    gradient.addColorStop(0.5, 'rgba(245, 197, 66, 0.12)');
+    gradient.addColorStop(1, 'rgba(245, 197, 66, 0.02)');
+    
+    window.graphCtx.fillStyle = gradient;
+    window.graphCtx.beginPath();
+    drawSpline(window.graphCtx, points);
+    window.graphCtx.lineTo(points[points.length - 1].px, h - margin);
+    window.graphCtx.lineTo(points[0].px, h - margin);
+    window.graphCtx.closePath();
+    window.graphCtx.fill();
+  }
+  
+  // Draw main curve line
+  if (points.length > 0) {
+    window.graphCtx.strokeStyle = '#f5c542';
+    window.graphCtx.lineWidth = 3.5;
+    window.graphCtx.lineCap = 'round';
+    window.graphCtx.lineJoin = 'round';
+    window.graphCtx.beginPath();
+    drawSpline(window.graphCtx, points);
+    window.graphCtx.stroke();
+    
+    // Draw final point larger
+    const last = points[points.length - 1];
+    window.graphCtx.fillStyle = '#ffd966';
+    window.graphCtx.beginPath();
+    window.graphCtx.arc(last.px, last.py, 4.5, 0, Math.PI * 2);
+    window.graphCtx.fill();
+    window.graphCtx.strokeStyle = '#f5c542';
+    window.graphCtx.lineWidth = 2.5;
+    window.graphCtx.stroke();
+  }
 }
 
-function rotateChallengeQuote() {
-  challengeIdx = (challengeIdx + 1) % CHALLENGE_QUOTES.length;
-  setQuoteText(CHALLENGE_QUOTES[challengeIdx]);
+function updateGraphPointImmediate() {
+  if (!window.started || window.finished) return;
+  
+  // Use actual elapsed time from test start
+  const nowMs = Date.now();
+  const elapsedMs = nowMs - window.graphStartTime;
+  const elapsed = Math.max(elapsedMs / 1000, 0.1); // Convert to seconds, minimum 0.1s
+  
+  // Count correct characters in the current in-progress word
+  let inProgressCorrect = 0;
+  if (currentWordIndex < words.length) {
+    const inputVal = hiddenInput.value;
+    const currentWord = words[currentWordIndex];
+    const cleanWord = currentWord.toLowerCase().replace(/[^\w\s]/g, '');
+    for (let i = 0; i < inputVal.length && i < cleanWord.length; i++) {
+      if (inputVal[i].toLowerCase() === cleanWord[i]) {
+        inProgressCorrect++;
+      }
+    }
+  }
+  
+  // Calculate cumulative average WPM including in-progress correct chars
+  const totalCorrect = window.correctChars + inProgressCorrect;
+  const avgWpm = elapsed > 0 ? Math.round((totalCorrect / 5) / (elapsed / 60)) : 0;
+  
+  // Add current data point instantly
+  if (window.graphData.length === 0) {
+    window.graphData.push({
+      time: elapsed,
+      wpm: avgWpm,
+      correctCharsCount: totalCorrect
+    });
+  } else {
+    const lastPoint = window.graphData[window.graphData.length - 1];
+    // Update instantly when time or WPM changes
+    if (Math.abs(elapsed - lastPoint.time) > 0.001 || avgWpm !== lastPoint.wpm) {
+      window.graphData.push({
+        time: elapsed,
+        wpm: Math.max(0, avgWpm),
+        correctCharsCount: totalCorrect
+      });
+    }
+  }
 }
 
-function startChallengeRotation() {
-  setQuoteText(CHALLENGE_QUOTES[challengeIdx]);
-  challengeInterval = setInterval(rotateChallengeQuote, 5000);
+
+function startGraphAnimation() {
+  // Continuous smooth animation loop running at 60fps
+  function animationLoop() {
+    if (window.started && !window.finished) {
+      // Update graph data continuously at 60fps for perfect sync and smoothness
+      updateGraphPointImmediate();
+      renderGraph();
+      window.graphAnimationFrame = requestAnimationFrame(animationLoop);
+    } else if (window.finished && window.graphData.length > 0) {
+      // Final render when test ends
+      renderGraph();
+    }
+  }
+  
+  window.graphAnimationFrame = requestAnimationFrame(animationLoop);
 }
 
-function stopChallengeRotation() {
-  if (challengeInterval) { clearInterval(challengeInterval); challengeInterval = null; }
+function stopGraphAnimation() {
+  if (window.graphAnimationFrame) {
+    cancelAnimationFrame(window.graphAnimationFrame);
+    window.graphAnimationFrame = null;
+  }
 }
 
-let lastQuoteUpdate = 0;
-
-function updateLiveQuote(force = false) {
-  if (!started || finished) return;
-  const now = Date.now();
-  if (!force && now - lastQuoteUpdate < 5500) return;
-  lastQuoteUpdate = now;
-
-  const elapsed = Math.max(selectedTime - timeLeft, 1);
-  const wpm = Math.round((correctChars / 5) / (elapsed / 60));
-  const acc = totalTyped > 0 ? Math.round((correctChars / totalTyped) * 100) : 100;
-  const tier = getQuoteTier(wpm, acc);
-  setQuoteText(pickLiveQuote(tier));
+function clearGraph() {
+  window.graphData = [];
+  window.graphMaxWPM = 50;
+  if (window.graphAnimationFrame) {
+    cancelAnimationFrame(window.graphAnimationFrame);
+    window.graphAnimationFrame = null;
+  }
+  if (window.graphCtx && window.graphCanvas) {
+    const cw = window.graphLogicalW || window.graphCanvas.width;
+    const ch = window.graphLogicalH || window.graphCanvas.height;
+    window.graphCtx.fillStyle = 'rgba(26, 26, 26, 1)';
+    window.graphCtx.clearRect(0, 0, cw, ch);
+    window.graphCtx.fillRect(0, 0, cw, ch);
+  }
 }
 
-let selectedTime = 30, timeLeft = 30;
+window.selectedTime = 30;
+window.timeLeft = 30;
 let timer = null;
-let started = false, finished = false;
+window.started = false;
+window.finished = false;
 let currentWordIndex = 0, currentCharIndex = 0;
-let totalTyped = 0, totalErrors = 0, correctChars = 0;
+let totalTyped = 0, totalErrors = 0;
+let committedCorrectChars = 0; // Track correct chars from committed words
+window.correctChars = 0;
 let words = [], wordElements = [], charElements = [];
 let performanceHistory = [];
 
 const wordsDisplay = document.getElementById('words-display');
 const hiddenInput  = document.getElementById('hidden-input');
-const clickPrompt  = document.getElementById('click-prompt');
 const timerBar     = document.getElementById('timer-bar');
 const timerBarWrap = document.getElementById('timer-bar-wrap');
 const cursorBeam   = document.getElementById('cursor-beam');
@@ -602,6 +724,8 @@ function autoScrollToWord(index) {
 }
 
 function spawnSpark(x, y) {
+  // DISABLED: Spark animation removed
+  return;
   const spark = document.createElement('div');
   spark.className = 'cursor-spark';
   spark.style.left = x + 'px';
@@ -610,45 +734,113 @@ function spawnSpark(x, y) {
   setTimeout(() => spark.remove(), 520);
 }
 
-function moveCursor() {
-  if (currentWordIndex >= words.length) { cursorBeam.style.display = 'none'; return; }
+let cursorUpdatePending = false;
+
+function updateCursorPosition() {
+  if (currentWordIndex >= words.length || !started || finished) { 
+    cursorBeam.style.display = 'none'; 
+    cursorUpdatePending = false;
+    return; 
+  }
+  
   const ref = wordsInner || wordsDisplay;
-  const cRect = ref.getBoundingClientRect();
-  let left, top, height;
-  
-  // Ensure we have valid word and character elements
-  if (!charElements[currentWordIndex] || charElements[currentWordIndex].length === 0) {
-    cursorBeam.style.display = 'none';
-    return;
+  if (!ref || !ref.parentElement) { 
+    cursorBeam.style.display = 'none'; 
+    cursorUpdatePending = false;
+    return; 
   }
   
-  if (currentCharIndex === 0) {
-    const first = charElements[currentWordIndex][0];
-    if (!first || !first.parentElement) {
-      cursorBeam.style.display = 'none';
+  try {
+    // Get fresh reference to current word's char elements
+    if (!charElements[currentWordIndex] || charElements[currentWordIndex].length === 0) {
+      cursorUpdatePending = false;
       return;
     }
-    const r = first.getBoundingClientRect();
-    left = r.left - cRect.left - 2;
-    top  = r.top  - cRect.top  + r.height * 0.1;
-    height = r.height * 0.78;
-  } else {
-    const charIdx = Math.min(currentCharIndex - 1, charElements[currentWordIndex].length - 1);
-    const prev = charElements[currentWordIndex][charIdx];
-    if (!prev || !prev.parentElement) {
-      cursorBeam.style.display = 'none';
+    
+    const containerRect = ref.getBoundingClientRect();
+    if (!containerRect) { 
+      cursorUpdatePending = false;
+      return; 
+    }
+    
+    // Determine which character element to use for positioning
+    let charElement = null;
+    let isFirstChar = false;
+    let useWordElement = false;
+    
+    if (currentCharIndex === 0) {
+      charElement = charElements[currentWordIndex][0];
+      isFirstChar = true;
+    } else if (currentCharIndex >= charElements[currentWordIndex].length) {
+      // When past all characters (e.g., space), use word element for positioning
+      charElement = charElements[currentWordIndex][charElements[currentWordIndex].length - 1];
+      useWordElement = true;
+      isFirstChar = false;
+    } else {
+      charElement = charElements[currentWordIndex][currentCharIndex - 1];
+      isFirstChar = false;
+    }
+    
+    if (!charElement || !charElement.parentElement) {
+      cursorUpdatePending = false;
       return;
     }
-    const r = prev.getBoundingClientRect();
-    left = r.right - cRect.left;
-    top  = r.top   - cRect.top  + r.height * 0.1;
-    height = r.height * 0.78;
+    
+    // For space character, get bounding from word element instead
+    let charRect = charElement.getBoundingClientRect();
+    if (useWordElement && wordElements[currentWordIndex]) {
+      charRect = wordElements[currentWordIndex].getBoundingClientRect();
+    }
+    
+    if (!charRect) { 
+      cursorUpdatePending = false;
+      return; 
+    }
+    
+    // Calculate cursor position
+    let left, top, height;
+    
+    // Fallback dimensions for invisible characters like space
+    const charWidth = charRect.width > 0 ? charRect.width : 8;
+    const charHeight = charRect.height > 0 ? charRect.height : 18;
+    
+    if (isFirstChar) {
+      left = charRect.left - containerRect.left - 2;
+    } else if (useWordElement) {
+      // Position at end of word element
+      left = charRect.right - containerRect.left - 2;
+    } else {
+      // Position after the character
+      left = charRect.left - containerRect.left + charWidth;
+    }
+    
+    top = charRect.top - containerRect.top + charHeight * 0.1;
+    height = Math.max(charHeight * 0.78, 8);
+    
+    // Validate all values
+    if (!isFinite(left) || !isFinite(top) || !isFinite(height)) {
+      cursorUpdatePending = false;
+      return;
+    }
+    
+    // SHOW cursor if we made it this far with valid data
+    cursorBeam.style.display = 'block';
+    cursorBeam.style.height = height + 'px';
+    cursorBeam.style.transform = `translate(${left}px, ${top}px)`;
+    
+  } catch (e) {
+    console.error('Cursor update error:', e);
   }
   
-  // Ensure cursor is visible
-  cursorBeam.style.display = 'block';
-  cursorBeam.style.height = height + 'px';
-  cursorBeam.style.transform = 'translate(' + left + 'px, ' + top + 'px)';
+  cursorUpdatePending = false;
+}
+
+function moveCursor() {
+  // Debounce cursor updates - only one update per frame
+  if (!cursorUpdatePending) {
+    cursorUpdatePending = true;
+    requestAnimationFrame(updateCursorPosition);
+  }
 }
 
 function animateCountUp(el, target, duration, suffix = '') {
@@ -722,11 +914,16 @@ function restoreStatsPanel() {
       <span class="stat-label">Time Left</span>
     </div>
     <div class="stat" id="quote-cell">
-      <span class="stat-quote" id="live-quote"></span>
+      <div id="wpm-graph-container" class="wpm-graph-container">
+        <canvas id="wpm-graph-canvas"></canvas>
+      </div>
     </div>
   `;
   if (statsPanel.classList.contains('show-results'))
     statsPanel.classList.replace('show-results', 'during-test');
+  
+  // Re-initialize the graph after DOM update
+  setTimeout(() => initGraph(), 0);
 }
 
 let _arcTotal = 30;
@@ -811,17 +1008,14 @@ function renderArcTimer(container, seconds) {
 }
 
 function startTyping() {
-  if (started) return;
-  started = true;
+  if (window.started) return;
+  window.started = true;
   stopScrambler();
-  stopChallengeRotation();
-  clickPrompt.classList.add('hidden');
   wordsDisplay.classList.add('active-typing');
   document.getElementById('words-area').classList.add('typing-glow');
   mainCard.classList.add('focused');
 
-  setQuoteText("Let's go - show what you've got.");
-  lastQuoteUpdate = Date.now();
+  initGraph();
 
   timerBar.style.transition = 'none';
   timerBar.style.transform  = 'scaleX(1)';
@@ -848,13 +1042,12 @@ function startTyping() {
       performanceHistory.push({ wpm: Math.max(0, wpm), acc: Math.min(100, acc) });
     }
     
-    updateLiveQuote();
     if (timeLeft <= 0) { clearInterval(timer); endTest(); }
   }, 1000);
 }
 
 function endTest() {
-  finished = true;
+  window.finished = true;
   hiddenInput.blur();
   cursorBeam.style.display = 'none';
   mainCard.classList.remove('focused');
@@ -885,18 +1078,29 @@ function endTest() {
 }
 
 function commitWord(typedInput) {
-  const typed = typedInput.trim().toLowerCase();
+  const typed = typedInput.toLowerCase();
   const currentWord = words[currentWordIndex];
   const cleanWord = currentWord.toLowerCase().replace(/[^\w\s]/g, '');
   
-  for (let i = currentCharIndex; i < cleanWord.length; i++)
+  // Mark remaining untyped characters as wrong
+  for (let i = typed.length; i < cleanWord.length; i++)
     charElements[currentWordIndex][i]?.classList.add('wrong');
+  
+  // Track total typed and errors for final stats
   const compareLen = Math.max(typed.length, cleanWord.length);
+  let correctInThisWord = 0;
   for (let i = 0; i < compareLen; i++) {
     totalTyped++;
-    if (i < typed.length && i < cleanWord.length && typed[i] === cleanWord[i]) correctChars++;
-    else totalErrors++;
+    if (i < typed.length && i < cleanWord.length && typed[i] === cleanWord[i]) {
+      correctInThisWord++;
+    } else {
+      totalErrors++;
+    }
   }
+  
+  // Update committed correct chars for graph calculation
+  committedCorrectChars += correctInThisWord;
+  
   if (typed !== cleanWord) {
     const wEl = wordElements[currentWordIndex];
 
@@ -912,66 +1116,152 @@ function commitWord(typedInput) {
   }
   if (currentWordIndex >= words.length) { endTest(); return; }
   autoScrollToWord(currentWordIndex);
-  updateLiveQuote(true);
+  moveCursor();
 }
 
+let lastInputLength = 0; // Track previous input length for backspace detection
+let skipBackspaceDetection = false; // Flag to prevent false backspace detection after commit
+
 hiddenInput.addEventListener('input', () => {
-  if (finished) return;
-  const inputVal = hiddenInput.value;
+  if (window.finished) return;
+  let inputVal = hiddenInput.value;
   const currentWord = words[currentWordIndex];
   
   // Clean word: remove punctuation and convert to lowercase for comparison
   const cleanWord = currentWord.toLowerCase().replace(/[^\w\s]/g, '');
 
-  if (inputVal.endsWith(' ')) {
-    if (inputVal.trim() === '') { hiddenInput.value = ''; return; }
-    commitWord(inputVal);
-  } else {
-    currentCharIndex = inputVal.length;
-    charElements[currentWordIndex]?.forEach((charEl, i) => {
-      const wasWrong = charEl.classList.contains('wrong');
-      charEl.classList.remove('correct', 'wrong');
-      if (i < inputVal.length) {
-        if (inputVal[i].toLowerCase() === cleanWord[i]) {
-          charEl.classList.add('correct');
-        } else {
-          if (!wasWrong) void charEl.offsetWidth;
-          charEl.classList.add('wrong');
-        }
+  skipBackspaceDetection = false; // Reset flag
+  lastInputLength = inputVal.length; // Update for next time
+
+  // Track actual input length for cursor position (now includes spaces)
+  currentCharIndex = inputVal.length;
+  
+  // Show visual feedback for all typed characters
+  charElements[currentWordIndex]?.forEach((charEl, i) => {
+    // ALWAYS remove both classes first for clean state
+    charEl.classList.remove('correct', 'wrong');
+    charEl.style.opacity = '';
+    charEl.style.color = '';
+    
+    if (i < inputVal.length) {
+      // Apply styling for each typed character
+      if (inputVal[i].toLowerCase() === cleanWord[i]) {
+        charEl.classList.add('correct');
+      } else {
+        void charEl.offsetWidth; // Trigger reflow for color transition
+        charEl.classList.add('wrong');
       }
-    });
-    updateLiveQuote();
+    }
+  });
+  
+  // Update window.correctChars in real-time for accurate graph WPM
+  // Count: correct chars from completed words + correct chars in current word being typed
+  let realtimeCorrectChars = committedCorrectChars; // Start with correct chars from previous committed words
+  
+  // Add correct chars in current word being typed
+  for (let i = 0; i < Math.min(inputVal.length, cleanWord.length); i++) {
+    if (inputVal[i].toLowerCase() === cleanWord[i]) {
+      realtimeCorrectChars++;
+    }
   }
+  
+  window.correctChars = realtimeCorrectChars;
+  
+  // Update graph on every keystroke for real-time sync
+  updateGraphPointImmediate();
+  
+  // Update cursor position ONCE per input event (debounced)
   moveCursor();
   clearTimeout(cursorBlinkTimeout);
-  cursorBeam.classList.remove('cursor-blink');
-  cursorBlinkTimeout = setTimeout(() => {
-    cursorBeam.classList.add('cursor-blink');
-  }, 500);
+  // ANIMATION DISABLED - Do not add cursor-blink class
+  // cursorBeam.classList.remove('cursor-blink');
+  // cursorBlinkTimeout = setTimeout(() => {
+  //   cursorBeam.classList.add('cursor-blink');
+  // }, 500);
 });
 
 hiddenInput.addEventListener('keydown', e => {
-  if (e.key === 'Backspace' && hiddenInput.value === '') e.preventDefault();
+  if (window.finished) return;
+
+  const currentWord = words[currentWordIndex];
+  const cleanWord = currentWord.toLowerCase().replace(/[^\w\s]/g, '');
+
+  // Handle Backspace: always delete one character at a time
+  if (e.key === 'Backspace') {
+    e.preventDefault();
+    const currentInput = hiddenInput.value;
+    
+    if (currentInput.length === 0) {
+      // When input is empty, move to previous word
+      if (currentWordIndex > 0) {
+        // Move to previous word
+        currentWordIndex--;
+        const prevWord = words[currentWordIndex];
+        const cleanWord = prevWord.toLowerCase().replace(/[^\w\s]/g, '');
+        // Set to word with last character already deleted (one backspace removes one char)
+        hiddenInput.value = cleanWord.slice(0, -1);
+        currentCharIndex = hiddenInput.value.length;
+        // Trigger input event to restore visual styling
+        hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+      } else {
+        // Already at first word, just ensure cursor at start
+        currentCharIndex = 0;
+      }
+    } else {
+      // Delete single character from input
+      hiddenInput.value = currentInput.slice(0, -1);
+      // Trigger input event to update UI
+      hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    return;
+  }
+
+  // Handle Space: commit the word instead of typing space
+  if (e.key === ' ') {
+    e.preventDefault();
+    const currentInput = hiddenInput.value;
+    if (currentInput.length > 0) {
+      // Commit the word without adding space
+      commitWord(currentInput);
+    }
+    return;
+  }
+
+  // Prevent typing characters beyond the word length
+  const currentInput = hiddenInput.value;
+  if (currentInput.length >= cleanWord.length && e.key.length === 1 && !e.ctrlKey && !e.altKey) {
+    e.preventDefault();
+    return;
+  }
 });
 
 // -- KEY TO START: first keypress starts the test but does NOT type into the box --
 document.addEventListener('keydown', e => {
   if (e.key === 'Tab') { e.preventDefault(); generateWords(); resetTest(); return; }
+  
+  // Alt+Backspace to go to previous word (advanced feature)
+  if (e.key === 'Backspace' && e.altKey && window.started && !window.finished && currentWordIndex > 0) {
+    e.preventDefault();
+    currentWordIndex--;
+    currentCharIndex = 0;
+    hiddenInput.value = '';
+    charElements[currentWordIndex]?.forEach((charEl) => {
+      charEl.classList.remove('correct', 'wrong');
+    });
+    autoScrollToWord(currentWordIndex);
+    moveCursor();
+    hiddenInput.focus();
+    return;
+  }
 
-  if (!started && !finished) {
-    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey && e.key !== ' ') {
+  if (!window.started && !window.finished) {
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
       e.preventDefault();
       hiddenInput.focus();
       // Add the first character to input and start typing
       hiddenInput.value = e.key;
       startTyping();
       // Trigger input event to process the first character
-      hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
-    } else if (e.key === ' ' && !started && !finished) {
-      e.preventDefault();
-      hiddenInput.focus();
-      hiddenInput.value = ' ';
-      startTyping();
       hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
     }
   }
@@ -987,20 +1277,19 @@ hiddenInput.addEventListener('blur', () => {
 
 function resetTest() {
   clearInterval(timer);
-  stopChallengeRotation();
   stopScrambler();
-  if (typewriterTimer) { clearTimeout(typewriterTimer); typewriterTimer = null; }
-  started = finished = false;
+  clearGraph();
+  window.started = window.finished = false;
   currentWordIndex = currentCharIndex = 0;
-  totalTyped = totalErrors = correctChars = 0;
+  totalTyped = totalErrors = 0;
+  committedCorrectChars = 0;
+  window.correctChars = 0;
   performanceHistory = [];
-  lastQuoteUpdate = 0; lastTier = ''; lastLiveIdx = -1;
-  timeLeft = selectedTime;
+  window.timeLeft = window.selectedTime;
 
   timerBar.style.transition = 'none';
   timerBar.style.transform  = 'scaleX(1)';
   hiddenInput.value = '';
-  clickPrompt.classList.remove('hidden');
   cursorBeam.style.display = 'none';
   mainCard.classList.remove('focused');
   wordsDisplay.classList.remove('active-typing');
@@ -1014,7 +1303,6 @@ function resetTest() {
   });
   renderWords();
   startScrambler();
-  startChallengeRotation();
   requestAnimationFrame(moveCursor);
   requestAnimationFrame(() => positionPill(document.querySelector('.duration-option.active')));
   requestAnimationFrame(() => positionModePill(document.querySelector('.mode-option.active')));
@@ -1091,8 +1379,8 @@ document.querySelectorAll('.duration-option').forEach(btn => {
     document.querySelectorAll('.duration-option').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     positionPill(btn);
-    selectedTime = parseInt(btn.dataset.time);
-    generateWords(selectedTime >= 60 ? 180 : 100);
+    window.selectedTime = parseInt(btn.dataset.time);
+    generateWords(window.selectedTime >= 60 ? 180 : 100);
     resetTest();
   });
 });
@@ -1136,6 +1424,162 @@ window.addEventListener('resize', () => {
 
 generateWords();
 resetTest();
+
+// ============================================================================
+// SCREEN SAVER - Shows when inactive for 12 seconds (only when test not running)
+// ============================================================================
+let screensaverTimeout = null;
+let screensaverActive = false;
+let screensaverUpdateInterval = null;
+
+function hideScreensaver(e) {
+  if (!screensaverActive) return;
+  screensaverActive = false;
+  
+  const overlay = document.getElementById('screensaver-overlay');
+  if (overlay) {
+    overlay.classList.add('hiding');
+    
+    setTimeout(() => {
+      overlay.classList.remove('active', 'hiding');
+    }, 500);
+  }
+  
+  // Remove all event listeners
+  document.removeEventListener('keydown', hideScreensaver);
+  document.removeEventListener('keypress', hideScreensaver);
+  document.removeEventListener('keyup', hideScreensaver);
+  document.removeEventListener('mousedown', hideScreensaver);
+  
+  // Restart inactivity timer
+  resetScreensaverTimer();
+}
+
+function updateScreensaverTime() {
+  const clockContainer = document.getElementById('screensaver-clock');
+  const dateContainer = document.getElementById('screensaver-date');
+  if (!clockContainer) return;
+  
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const timeStr = hours + ':' + minutes + ':' + seconds;
+  
+  // Update date
+  if (dateContainer) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const date = now.getDate();
+    const month = months[now.getMonth()];
+    const year = now.getFullYear();
+    dateContainer.textContent = `${date} ${month} ${year}`;
+  }
+  
+  // Clear previous content
+  clockContainer.innerHTML = '';
+  
+  // For each character in timeStr, create pixel-block digit
+  for (let i = 0; i < timeStr.length; i++) {
+    const char = timeStr[i];
+    
+    if (char === ':') {
+      // Create colon separator
+      const colonDiv = document.createElement('div');
+      colonDiv.className = 'screensaver-clock-colon';
+      colonDiv.appendChild(document.createElement('div')); // top dot
+      colonDiv.appendChild(document.createElement('div')); // bottom dot
+      colonDiv.querySelectorAll('div').forEach(dot => {
+        dot.className = 'screensaver-clock-dot';
+      });
+      clockContainer.appendChild(colonDiv);
+    } else {
+      // Create digit grid
+      const digitNum = parseInt(char);
+      const digitGrid = DIGIT_MAP[digitNum];
+      const digitDiv = document.createElement('div');
+      
+      digitGrid.forEach(row => {
+        row.forEach(on => {
+          const cell = document.createElement('div');
+          cell.className = 'screensaver-clock-cell' + (on ? ' on' : '');
+          digitDiv.appendChild(cell);
+        });
+      });
+      
+      clockContainer.appendChild(digitDiv);
+    }
+  }
+}
+
+function showScreensaver() {
+  if (window.started) return; // Don't show if test is running
+  screensaverActive = true;
+  
+  const overlay = document.getElementById('screensaver-overlay');
+  if (overlay) {
+    overlay.classList.add('active');
+    updateScreensaverTime();
+    
+    // Update time every 1 second
+    if (screensaverUpdateInterval) clearInterval(screensaverUpdateInterval);
+    screensaverUpdateInterval = setInterval(() => {
+      if (screensaverActive) {
+        updateScreensaverTime();
+      }
+    }, 1000);
+  }
+  
+  // Add event listeners to hide on any key press or mouse click
+  document.addEventListener('keydown', hideScreensaver);
+  document.addEventListener('keypress', hideScreensaver);
+  document.addEventListener('keyup', hideScreensaver);
+  document.addEventListener('mousedown', hideScreensaver);
+  
+  // CURSOR ANIMATION DISABLED - mousemove effect removed
+}
+
+function resetScreensaverTimer() {
+  if (window.started) return; // Don't set timer if test is running
+  
+  if (screensaverTimeout) clearTimeout(screensaverTimeout);
+  if (screensaverUpdateInterval) clearInterval(screensaverUpdateInterval);
+  
+  screensaverTimeout = setTimeout(() => {
+    if (!window.started) {
+      showScreensaver();
+    }
+  }, 12000); // 12 seconds
+}
+
+// Track activity to reset screensaver timer (only keyboard and mouseclick, not mousemove)
+document.addEventListener('keydown', () => {
+  if (screensaverActive) return;
+  resetScreensaverTimer();
+});
+document.addEventListener('mousedown', () => {
+  if (screensaverActive) return;
+  resetScreensaverTimer();
+});
+
+// Clear screensaver when test starts
+const originalStartTyping = window.startTyping;
+window.startTyping = function() {
+  hideScreensaver();
+  if (screensaverTimeout) clearTimeout(screensaverTimeout);
+  if (screensaverUpdateInterval) clearInterval(screensaverUpdateInterval);
+  originalStartTyping.apply(this, arguments);
+};
+
+// Reset screensaver when test ends
+const originalResetTest = resetTest;
+resetTest = function() {
+  hideScreensaver();
+  originalResetTest.apply(this, arguments);
+  resetScreensaverTimer();
+};
+
+// Initialize screensaver timer on page load
+resetScreensaverTimer();
 
 // --- BACKGROUND CANVAS - DISABLED (only grid background is shown via CSS) ---
 (function() {
